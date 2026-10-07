@@ -19,6 +19,7 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
   const [sticker, setSticker] = useState('🧁');
   const [theme, setTheme] = useState<'rose' | 'gold' | 'lavender' | 'peach' | 'mint'>('rose');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Gemini AI Assistant state
   const [aiTone, setAiTone] = useState('Sweet & Poetic');
@@ -27,30 +28,27 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
   const [showAiHelper, setShowAiHelper] = useState(false);
 
   useEffect(() => {
-    fetchWishes();
+    let isMounted = true;
+    const loadWishes = async () => {
+      try {
+        const res = await fetch('/api/wishes');
+        if (!res.ok) throw new Error('Could not load wishes.');
+        const data = await res.json();
+        if (isMounted) setWishes(data.wishes);
+      } catch (err) {
+        console.error('Failed to load wishes:', err);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+
+    loadWishes();
+    const refreshInterval = window.setInterval(loadWishes, 5000);
+    return () => {
+      isMounted = false;
+      window.clearInterval(refreshInterval);
+    };
   }, []);
-
-const fetchWishes = async () => {
-  try {
-    setLoading(true);
-
-    const res = await fetch('/wishes.json');
-
-    if (!res.ok) {
-      throw new Error('Could not load wishes.json');
-    }
-
-    const data = await res.json();
-
-    console.log('WISHES LOADED:', data);
-    
-    setWishes(data);
-  } catch (err) {
-    console.error('Failed to load wishes:', err);
-  } finally {
-    setLoading(false);
-  }
-};
 
   const handleGenerateWithGemini = async () => {
     setIsGeneratingAi(true);
@@ -86,6 +84,7 @@ const fetchWishes = async () => {
     if (!name.trim() || !message.trim()) return;
 
     setIsSubmitting(true);
+    setSubmitError('');
     try {
       const res = await fetch('/api/wishes', {
         method: 'POST',
@@ -99,26 +98,27 @@ const fetchWishes = async () => {
         }),
       });
       const data = await res.json();
-      if (data.wish) {
-        birthdayAudio.playSparkleChime();
-        try {
-          confetti({
-            particleCount: 50,
-            spread: 60,
-            origin: { y: 0.7 },
-            colors: ['#f472b6', '#fbbf24', '#c084fc'],
-          });
-        } catch {
-          // ignore
-        }
+      if (!res.ok) throw new Error(data.error || 'Could not save your wish.');
+      if (!data.wish) throw new Error('The server did not confirm that your wish was saved.');
 
-        setWishes((prev) => [data.wish, ...prev]);
-        setName('');
-        setMessage('');
-        setAiCustomNotes('');
+      birthdayAudio.playSparkleChime();
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.7 },
+          colors: ['#f472b6', '#fbbf24', '#c084fc'],
+        });
+      } catch {
+        // ignore
       }
+      setWishes((prev) => [data.wish, ...prev]);
+      setName('');
+      setMessage('');
+      setAiCustomNotes('');
     } catch (err) {
       console.error('Failed to send wish:', err);
+      setSubmitError(err instanceof Error ? err.message : 'Could not save your wish.');
     } finally {
       setIsSubmitting(false);
     }
@@ -381,6 +381,11 @@ const fetchWishes = async () => {
               <Send className="w-4 h-4" />
               <span>{isSubmitting ? 'Posting Wish...' : 'Post Birthday Wish 💌'}</span>
             </button>
+            {submitError && (
+              <p role="alert" className="text-sm text-red-600">
+                {submitError}
+              </p>
+            )}
           </form>
         </div>
 

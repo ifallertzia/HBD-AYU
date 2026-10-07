@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json({ limit: '15mb' }));
 
@@ -166,25 +166,19 @@ const defaultMemories = [
 ];
 
 function readWishes() {
-  try {
-    if (!fs.existsSync(wishesFilePath)) {
-      fs.writeFileSync(wishesFilePath, JSON.stringify(defaultWishes, null, 2), 'utf-8');
-      return defaultWishes;
-    }
-    const data = fs.readFileSync(wishesFilePath, 'utf-8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error reading wishes:', err);
-    return defaultWishes;
+  if (!fs.existsSync(wishesFilePath)) {
+    fs.writeFileSync(wishesFilePath, JSON.stringify(defaultWishes, null, 2), 'utf-8');
   }
+
+  const wishes = JSON.parse(fs.readFileSync(wishesFilePath, 'utf-8'));
+  if (!Array.isArray(wishes)) {
+    throw new Error('The wishes data must be an array.');
+  }
+  return wishes;
 }
 
 function saveWishes(wishes: any[]) {
-  try {
-    fs.writeFileSync(wishesFilePath, JSON.stringify(wishes, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error saving wishes:', err);
-  }
+  fs.writeFileSync(wishesFilePath, JSON.stringify(wishes, null, 2), 'utf-8');
 }
 
 function readMemories() {
@@ -244,52 +238,71 @@ app.post('/api/photos', (req, res) => {
   res.status(201).json({ imageUrl: `/uploads/${fileName}` });
 });
 
-app.get('/api/wishes', (req, res) => {
-  const wishes = readWishes();
-  res.json({ wishes });
+app.get('/api/wishes', (_req, res) => {
+  try {
+    const wishes = readWishes();
+    wishes.sort((a: any, b: any) => b.createdAt.localeCompare(a.createdAt));
+    res.json({ wishes });
+  } catch (err) {
+    console.error('Error loading wishes:', err);
+    res.status(500).json({ error: 'Wishes are unavailable. Check the server logs for details.' });
+  }
 });
 
 app.post('/api/wishes', (req, res) => {
   const { name, relationship, message, sticker, theme } = req.body;
-  if (!name || !message) {
+  if (typeof name !== 'string' || !name.trim() || typeof message !== 'string' || !message.trim()) {
     return res.status(400).json({ error: 'Name and message are required.' });
   }
 
-  const wishes = readWishes();
   const newWish = {
-    id: `wish-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    id: `wish-${randomUUID()}`,
     name: name.trim().slice(0, 60),
-    relationship: (relationship || 'Friend').trim().slice(0, 40),
+    relationship:
+      typeof relationship === 'string' ? relationship.trim().slice(0, 40) || 'Friend' : 'Friend',
     message: message.trim().slice(0, 1000),
-    sticker: sticker || '🧁',
-    theme: theme || 'rose',
+    sticker: typeof sticker === 'string' ? sticker : '🧁',
+    theme: typeof theme === 'string' ? theme : 'rose',
     likes: 0,
     createdAt: new Date().toISOString(),
   };
 
-  wishes.unshift(newWish);
-  saveWishes(wishes);
-  res.status(201).json({ wish: newWish });
+  try {
+    const wishes = readWishes();
+    wishes.unshift(newWish);
+    saveWishes(wishes);
+    res.status(201).json({ wish: newWish });
+  } catch (err) {
+    console.error('Error saving wish:', err);
+    res.status(500).json({ error: 'Your wish could not be saved. Check the server logs for details.' });
+  }
 });
 
 app.post('/api/wishes/:id/like', (req, res) => {
   const { id } = req.params;
-  const wishes = readWishes();
-  const target = wishes.find((w: any) => w.id === id);
-  if (!target) {
-    return res.status(404).json({ error: 'Wish not found' });
+  try {
+    const wishes = readWishes();
+    const target = wishes.find((wish: any) => wish.id === id);
+    if (!target) return res.status(404).json({ error: 'Wish not found.' });
+    target.likes = (target.likes || 0) + 1;
+    saveWishes(wishes);
+    res.json({ success: true, likes: target.likes });
+  } catch (err) {
+    console.error('Error liking wish:', err);
+    res.status(500).json({ error: 'Could not like this wish right now.' });
   }
-  target.likes = (target.likes || 0) + 1;
-  saveWishes(wishes);
-  res.json({ success: true, likes: target.likes });
 });
 
 app.delete('/api/wishes/:id', (req, res) => {
   const { id } = req.params;
-  let wishes = readWishes();
-  wishes = wishes.filter((w: any) => w.id !== id);
-  saveWishes(wishes);
-  res.json({ success: true });
+  try {
+    const wishes = readWishes().filter((wish: any) => wish.id !== id);
+    saveWishes(wishes);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting wish:', err);
+    res.status(500).json({ error: 'Could not delete this wish right now.' });
+  }
 });
 
 // Yearly memories / pictures
