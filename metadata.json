@@ -1,0 +1,6 @@
+{
+  "name": "cupcakeee",
+  "description": "Celebrating Koena's 20th Birthday (7 October 2006, 11:30 PM) — age tracker, Venusian astrology, birthday candles, yearly memories, and heartfelt wishes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

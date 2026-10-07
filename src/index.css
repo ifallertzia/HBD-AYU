@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-handwriting: "Caveat", cursive;
+}
+
+@keyframes spinReverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-reverse {
+  animation: spinReverse 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-up {
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.disco-lights::before {
+  content: "";
+  position: absolute;
+  inset: -25%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.75;
+  mix-blend-mode: screen;
+  animation: discoPulse 0.65s ease-in-out infinite alternate;
+}
+
+.disco-theme-0::before {
+  background:
+    radial-gradient(ellipse at 10% 10%, #22d3ee99, transparent 42%),
+    radial-gradient(ellipse at 90% 10%, #f472b699, transparent 42%),
+    radial-gradient(ellipse at 12% 90%, #fde04799, transparent 42%),
+    radial-gradient(ellipse at 90% 90%, #c084fc99, transparent 42%);
+}
+
+.disco-theme-1::before {
+  background:
+    radial-gradient(ellipse at 10% 10%, #fb718599, transparent 42%),
+    radial-gradient(ellipse at 90% 10%, #f9731699, transparent 42%),
+    radial-gradient(ellipse at 12% 90%, #facc1599, transparent 42%),
+    radial-gradient(ellipse at 90% 90%, #e879f999, transparent 42%);
+}
+
+.disco-theme-2::before {
+  background:
+    radial-gradient(ellipse at 10% 10%, #22d3ee99, transparent 42%),
+    radial-gradient(ellipse at 90% 10%, #818cf899, transparent 42%),
+    radial-gradient(ellipse at 12% 90%, #34d39999, transparent 42%),
+    radial-gradient(ellipse at 90% 90%, #f0abfc99, transparent 42%);
+}
+
+.disco-theme-3::before {
+  background:
+    radial-gradient(ellipse at 10% 10%, #fb718599, transparent 42%),
+    radial-gradient(ellipse at 90% 10%, #f0abfc99, transparent 42%),
+    radial-gradient(ellipse at 12% 90%, #a3e63599, transparent 42%),
+    radial-gradient(ellipse at 90% 90%, #60a5fa99, transparent 42%);
+}
+
+@keyframes discoPulse {
+  from {
+    opacity: 0.35;
+    transform: scale(0.96) rotate(-2deg);
+  }
+  to {
+    opacity: 0.9;
+    transform: scale(1.04) rotate(2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .disco-lights::before {
+    animation: none;
+  }
+}

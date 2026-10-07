@@ -1,0 +1,42 @@
+[
+  {
+    "id": "wish-2",
+    "name": "Mom & Dad",
+    "relationship": "Family",
+    "message": "On October 7th, 2006 at 11:30 PM, you came into our lives, sweet Koena, and made the whole world softer and brighter. We are so endlessly proud of the graceful, kind, thoughtful woman you have grown to be. Happy Birthday our princess! 💖",
+    "sticker": "💖",
+    "theme": "gold",
+    "likes": 23,
+    "createdAt": "2026-10-06T20:15:00.000Z"
+  },
+  {
+    "id": "wish-3",
+    "name": "Ashutosh",
+    "relationship": "With All My Heart",
+    "message": "To the sweetest Koena on her 20th milestone: You bring peace, joy, and so much beauty into this world. May every candle you blow tonight fulfill your deepest dreams. Always smiling for you! 🎂🌸",
+    "sticker": "🌸",
+    "theme": "peach",
+    "likes": 28,
+    "createdAt": "2026-10-06T22:00:00.000Z"
+  },
+  {
+    "id": "wish-4",
+    "name": "Leo",
+    "relationship": "Childhood Friend",
+    "message": "Happy Birthday Koena, the most stylish Libra alive! From your cute childhood days to turning 20 today, you have always had the warmest heart. Wishing you endless joy!",
+    "sticker": "🎉",
+    "theme": "lavender",
+    "likes": 8,
+    "createdAt": "2026-10-07T00:01:00.000Z"
+  },
+  {
+    "id": "wish-5",
+    "name": "Maya",
+    "relationship": "Soul Sister",
+    "message": "Blowing 20 virtual candles with you today Koena! May your year ahead be as breathtaking and lovely as you are. Love you so much! 🌸🕯️",
+    "sticker": "🕯️",
+    "theme": "mint",
+    "likes": 11,
+    "createdAt": "2026-10-07T08:20:00.000Z"
+  }
+]
