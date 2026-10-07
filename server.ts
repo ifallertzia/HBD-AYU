@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { randomUUID } from 'crypto';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 
@@ -17,12 +18,24 @@ app.use(express.json({ limit: '15mb' }));
 
 // Ensure data folder exists
 const dataDir = path.join(__dirname, 'data');
+const uploadsDir = path.join(dataDir, 'photo-uploads');
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir, { fallthrough: false }));
 
 const wishesFilePath = path.join(dataDir, 'wishes.json');
 const memoriesFilePath = path.join(dataDir, 'memories.json');
+const photoMimeExtensions: Record<string, string> = {
+  'image/jpeg': '.jpg',
+  'image/png': '.png',
+  'image/webp': '.webp',
+  'image/gif': '.gif',
+};
+const maxPhotoSizeBytes = 8 * 1024 * 1024;
 
 // Initialize Gemini Client
 const ai = new GoogleGenAI({
@@ -189,14 +202,48 @@ function readMemories() {
 }
 
 function saveMemories(memories: any[]) {
-  try {
-    fs.writeFileSync(memoriesFilePath, JSON.stringify(memories, null, 2), 'utf-8');
-  } catch (err) {
-    console.error('Error saving memories:', err);
-  }
+  fs.writeFileSync(memoriesFilePath, JSON.stringify(memories, null, 2), 'utf-8');
+}
+
+function removeUploadedPhoto(imageUrl: string) {
+  if (!imageUrl.startsWith('/uploads/')) return;
+  const fileName = path.basename(imageUrl);
+  if (fileName !== imageUrl.slice('/uploads/'.length)) return;
+  const filePath = path.join(uploadsDir, fileName);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 }
 
 // API Routes
+app.post('/api/photos', (req, res) => {
+  const { dataUrl } = req.body;
+  if (typeof dataUrl !== 'string') {
+    return res.status(400).json({ error: 'Choose an image file to upload.' });
+  }
+
+  const match = /^data:(image\/(?:jpeg|png|webp|gif));base64,([A-Za-z0-9+/]+={0,2})$/.exec(dataUrl);
+  if (!match) {
+    return res.status(400).json({ error: 'Use a JPEG, PNG, WebP, or GIF image.' });
+  }
+
+  const [, mimeType, encodedImage] = match;
+  const image = Buffer.from(encodedImage, 'base64');
+  if (image.length === 0 || image.length > maxPhotoSizeBytes) {
+    return res.status(400).json({ error: 'Photos must be smaller than 8 MB.' });
+  }
+  const validImageSignature =
+    (mimeType === 'image/jpeg' && image[0] === 0xff && image[1] === 0xd8 && image[2] === 0xff) ||
+    (mimeType === 'image/png' && image.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) ||
+    (mimeType === 'image/webp' && image.toString('ascii', 0, 4) === 'RIFF' && image.toString('ascii', 8, 12) === 'WEBP') ||
+    (mimeType === 'image/gif' && ['GIF87a', 'GIF89a'].includes(image.toString('ascii', 0, 6)));
+  if (!validImageSignature) {
+    return res.status(400).json({ error: 'The selected file is not a valid image.' });
+  }
+
+  const fileName = `${randomUUID()}${photoMimeExtensions[mimeType]}`;
+  fs.writeFileSync(path.join(uploadsDir, fileName), image, { flag: 'wx' });
+  res.status(201).json({ imageUrl: `/uploads/${fileName}` });
+});
+
 app.get('/api/wishes', (req, res) => {
   const wishes = readWishes();
   res.json({ wishes });
@@ -256,7 +303,7 @@ app.get('/api/memories', (req, res) => {
 app.post('/api/memories', (req, res) => {
   const { year, title, caption, imageUrl, date, tag } = req.body;
   const parsedYear = parseInt(year, 10);
-  if (isNaN(parsedYear) || !title || !imageUrl) {
+  if (isNaN(parsedYear) || typeof title !== 'string' || !title.trim() || typeof imageUrl !== 'string' || !imageUrl.trim()) {
     return res.status(400).json({ error: 'Year, title, and imageUrl are required.' });
   }
 
@@ -267,10 +314,10 @@ app.post('/api/memories', (req, res) => {
     year: parsedYear,
     age,
     title: title.trim().slice(0, 80),
-    caption: (caption || '').trim().slice(0, 500),
-    imageUrl,
-    date: date || `October 7, ${parsedYear}`,
-    tag: tag || 'Memory',
+    caption: typeof caption === 'string' ? caption.trim().slice(0, 500) : '',
+    imageUrl: imageUrl.trim(),
+    date: typeof date === 'string' && date.trim() ? date.trim().slice(0, 80) : `October 7, ${parsedYear}`,
+    tag: typeof tag === 'string' && tag.trim() ? tag.trim().slice(0, 40) : 'Memory',
   };
 
   memories.push(newMemory);
@@ -286,7 +333,8 @@ app.put('/api/memories/:id', (req, res) => {
   if (!target) {
     return res.status(404).json({ error: 'Memory not found' });
   }
-  if (imageUrl) target.imageUrl = imageUrl;
+  const previousImageUrl = target.imageUrl;
+  if (typeof imageUrl === 'string' && imageUrl.trim()) target.imageUrl = imageUrl.trim();
   if (title) target.title = title.trim();
   if (caption !== undefined) target.caption = caption.trim();
   if (year) {
@@ -296,14 +344,18 @@ app.put('/api/memories/:id', (req, res) => {
   if (tag) target.tag = tag;
   if (date) target.date = date;
   saveMemories(memories);
+  if (target.imageUrl !== previousImageUrl) removeUploadedPhoto(previousImageUrl);
   res.json({ memory: target });
 });
 
 app.delete('/api/memories/:id', (req, res) => {
   const { id } = req.params;
   let memories = readMemories();
+  const target = memories.find((memory: any) => memory.id === id);
+  if (!target) return res.status(404).json({ error: 'Memory not found' });
   memories = memories.filter((m: any) => m.id !== id);
   saveMemories(memories);
+  removeUploadedPhoto(target.imageUrl);
   res.json({ success: true });
 });
 

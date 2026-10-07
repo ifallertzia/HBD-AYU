@@ -4,6 +4,38 @@ import { Image, Plus, Trash2, Calendar, Maximize2, X, Sparkles, Upload, Camera, 
 import { birthdayAudio } from '../utils/audio';
 import confetti from '../utils/confetti';
 
+const MAX_PHOTO_SIZE_BYTES = 8 * 1024 * 1024;
+const ACCEPTED_PHOTO_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+const readFileAsDataUrl = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') resolve(reader.result);
+      else reject(new Error(`Could not read ${file.name}.`));
+    };
+    reader.onerror = () => reject(new Error(`Could not read ${file.name}.`));
+    reader.readAsDataURL(file);
+  });
+
+const uploadPhoto = async (file: File) => {
+  if (!ACCEPTED_PHOTO_TYPES.includes(file.type)) {
+    throw new Error(`${file.name}: use a JPEG, PNG, WebP, or GIF image.`);
+  }
+  if (file.size > MAX_PHOTO_SIZE_BYTES) {
+    throw new Error(`${file.name}: photos must be smaller than 8 MB.`);
+  }
+
+  const response = await fetch('/api/photos', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ dataUrl: await readFileAsDataUrl(file) }),
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error || 'Photo upload failed.');
+  return data.imageUrl as string;
+};
+
 export const YearlyGallery: React.FC = () => {
   const [memories, setMemories] = useState<MemoryPhoto[]>([]);
   const [loading, setLoading] = useState(true);
@@ -20,156 +52,127 @@ export const YearlyGallery: React.FC = () => {
   const [formTag, setFormTag] = useState('Birthday');
   const [formDate, setFormDate] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isBatchUploading, setIsBatchUploading] = useState(false);
 
   useEffect(() => {
     fetchMemories();
   }, []);
 
-  const fetchMemories = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/memories');
-      const data = await res.json();
-      if (data.memories) {
-        setMemories(data.memories);
-      }
-    } catch (err) {
-      console.error('Failed to load memories:', err);
-    } finally {
-      setLoading(false);
+ const fetchMemories = async () => {
+  try {
+    setLoading(true);
+
+    const res = await fetch('/memories.json');
+
+    if (!res.ok) {
+      throw new Error('Could not load memories.json');
     }
-  };
+
+    const data = await res.json();
+
+    setMemories(data);
+  } catch (err) {
+    console.error('Failed to load memories:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const showNotification = (msg: string) => {
     setUploadToast(msg);
     setTimeout(() => setUploadToast(null), 3500);
   };
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          setFormImageUrl(reader.result);
-        }
-      };
-      reader.readAsDataURL(file);
+    e.target.value = '';
+    if (!file) return;
+
+    setIsUploadingPhoto(true);
+    try {
+      setFormImageUrl(await uploadPhoto(file));
+    } catch (err) {
+      showNotification(err instanceof Error ? err.message : 'Photo upload failed.');
+    } finally {
+      setIsUploadingPhoto(false);
     }
   };
 
   // Direct replacement for a specific card
-  const handleCardPhotoReplace = (memoryId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCardPhotoReplace = async (memoryId: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = '';
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = async () => {
-      if (typeof reader.result === 'string') {
-        const base64Data = reader.result;
-        try {
-          const res = await fetch(`/api/memories/${memoryId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageUrl: base64Data }),
-          });
-          const data = await res.json();
-          if (data.memory) {
-            birthdayAudio.playSparkleChime();
-            setMemories((prev) =>
-              prev.map((m) => (m.id === memoryId ? data.memory : m))
-            );
-            showNotification(`✨ Photo successfully incorporated for ${data.memory.title}!`);
-            try {
-              confetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
-            } catch {}
-          }
-        } catch (err) {
-          console.error('Failed to update card photo:', err);
-        }
-      }
-    };
-    reader.readAsDataURL(file);
+    try {
+      const imageUrl = await uploadPhoto(file);
+      const res = await fetch(`/api/memories/${memoryId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Could not update this memory.');
+      birthdayAudio.playSparkleChime();
+      setMemories((prev) => prev.map((memory) => (memory.id === memoryId ? data.memory : memory)));
+      showNotification(`✨ Photo successfully incorporated for ${data.memory.title}!`);
+      confetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
+    } catch (err) {
+      showNotification(err instanceof Error ? err.message : 'Could not update this memory.');
+    }
   };
 
-  // Batch upload handler for all 6 photos at once
+  // Save each selected photo as a new public memory.
   const handleBatchUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
+    e.target.value = '';
     if (!files || files.length === 0) return;
-
     const fileList = Array.from(files);
-    showNotification(`Processing ${fileList.length} photos for Koena...`);
+    if (fileList.length > 20) {
+      showNotification('Choose up to 20 photos at a time.');
+      return;
+    }
 
-    const readFileAsBase64 = (file: File): Promise<{ name: string; data: string }> => {
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-          resolve({ name: file.name, data: reader.result as string });
-        };
-        reader.readAsDataURL(file);
-      });
-    };
+    setIsBatchUploading(true);
+    showNotification(`Adding ${fileList.length} photos to Koena's public gallery...`);
+    const addedMemories: MemoryPhoto[] = [];
+    const errors: string[] = [];
 
-    const loadedFiles = await Promise.all(fileList.map((f) => readFileAsBase64(f)));
-
-    // Mapping logic to match the 6 uploaded photos
-    // WA0018 -> 2006 Baby
-    // WA0001 -> 2008 Toddler
-    // WA0017 -> 2024 Traditional
-    // WA0002 -> 2025 Sleeping Plushie
-    // WA0003 -> 2026 Black Dress
-    // WA0000 -> 2026 Bunny Pillow
-    const currentMemories = [...memories];
-
-    let updatedCount = 0;
-
-    for (const loaded of loadedFiles) {
-      const lower = loaded.name.toLowerCase();
-      let targetId: string | null = null;
-
-      if (lower.includes('wa0018') || lower.includes('baby')) {
-        targetId = 'mem-2006';
-      } else if (lower.includes('wa0001') || lower.includes('toddler')) {
-        targetId = 'mem-2008';
-      } else if (lower.includes('wa0017')) {
-        targetId = 'mem-2024';
-      } else if (lower.includes('wa0002') || lower.includes('sleep')) {
-        targetId = 'mem-2025';
-      } else if (lower.includes('wa0003')) {
-        targetId = 'mem-2026-1';
-      } else if (lower.includes('wa0000') || lower.includes('bunny')) {
-        targetId = 'mem-2026-2';
-      } else {
-        // Fallback sequentially to any remaining slot
-        const available = currentMemories.find((m) => m.imageUrl.includes('unsplash.com'));
-        if (available) targetId = available.id;
-      }
-
-      if (targetId) {
-        try {
-          const res = await fetch(`/api/memories/${targetId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageUrl: loaded.data }),
-          });
-          const data = await res.json();
-          if (data.memory) {
-            const idx = currentMemories.findIndex((m) => m.id === targetId);
-            if (idx !== -1) currentMemories[idx] = data.memory;
-            updatedCount++;
-          }
-        } catch (err) {
-          console.error('Error saving batch photo:', err);
-        }
+    for (const file of fileList) {
+      try {
+        const imageUrl = await uploadPhoto(file);
+        const title = file.name.replace(/\.[^.]+$/, '').trim().slice(0, 80) || 'A sweet memory';
+        const response = await fetch('/api/memories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            year: new Date().getFullYear(),
+            title,
+            caption: '',
+            imageUrl,
+            tag: 'Memory',
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || `Could not add ${file.name}.`);
+        addedMemories.push(data.memory);
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : `Could not add ${file.name}.`);
       }
     }
 
-    setMemories(currentMemories);
-    birthdayAudio.playSparkleChime();
-    showNotification(`🎉 ${updatedCount} photos incorporated into Koena's memory gallery!`);
-    try {
+    if (addedMemories.length) {
+      setMemories((prev) => [...prev, ...addedMemories].sort((a, b) => a.year - b.year));
+      birthdayAudio.playSparkleChime();
       confetti({ particleCount: 70, spread: 70, origin: { y: 0.6 } });
-    } catch {}
+    }
+    if (errors.length) {
+      showNotification(`${addedMemories.length} photo(s) added; ${errors.length} failed. ${errors[0]}`);
+    } else {
+      showNotification(`🎉 ${addedMemories.length} photo(s) added to the public gallery!`);
+    }
+    setIsBatchUploading(false);
   };
 
   const handleAddMemory = async (e: React.FormEvent) => {
@@ -191,19 +194,17 @@ export const YearlyGallery: React.FC = () => {
         }),
       });
       const data = await res.json();
-      if (data.memory) {
-        birthdayAudio.playSparkleChime();
-        setMemories((prev) => [...prev, data.memory].sort((a, b) => a.year - b.year));
-        setIsAddModalOpen(false);
-        // Reset form
-        setFormTitle('');
-        setFormCaption('');
-        setFormImageUrl('');
-        setFormDate('');
-        showNotification('✨ New memory added to timeline!');
-      }
+      if (!res.ok) throw new Error(data.error || 'Failed to save memory.');
+      birthdayAudio.playSparkleChime();
+      setMemories((prev) => [...prev, data.memory].sort((a, b) => a.year - b.year));
+      setIsAddModalOpen(false);
+      setFormTitle('');
+      setFormCaption('');
+      setFormImageUrl('');
+      setFormDate('');
+      showNotification('✨ New memory added to the public gallery!');
     } catch (err) {
-      console.error('Failed to save memory:', err);
+      showNotification(err instanceof Error ? err.message : 'Failed to save memory.');
     } finally {
       setIsSubmitting(false);
     }
@@ -213,12 +214,14 @@ export const YearlyGallery: React.FC = () => {
     e.stopPropagation();
     if (!confirm('Are you sure you want to remove this photo memory?')) return;
     try {
-      await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+      const response = await fetch(`/api/memories/${id}`, { method: 'DELETE' });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to remove memory.');
       setMemories((prev) => prev.filter((m) => m.id !== id));
       if (activePhoto?.id === id) setActivePhoto(null);
       showNotification('Memory removed.');
     } catch (err) {
-      console.error('Failed to delete memory:', err);
+      showNotification(err instanceof Error ? err.message : 'Failed to remove memory.');
     }
   };
 
@@ -257,15 +260,16 @@ export const YearlyGallery: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 self-start md:self-auto">
-          {/* Quick Batch Upload Button */}
-          <label className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold text-xs shadow-md shadow-rose-200 hover:shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer">
+          {/* Batch uploads create new public gallery entries */}
+          <label className={`flex items-center gap-2 px-4 py-2.5 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-bold text-xs shadow-md shadow-rose-200 transition-all${isBatchUploading ? ' opacity-60 cursor-wait' : ' hover:shadow-lg hover:scale-105 active:scale-95 cursor-pointer'}`}>
             <Upload className="w-4 h-4" />
-            <span>Batch Upload Photos</span>
+            <span>{isBatchUploading ? 'Adding Photos...' : 'Upload Photos'}</span>
             <input
               type="file"
               multiple
               accept="image/*"
               onChange={handleBatchUpload}
+              disabled={isBatchUploading}
               className="hidden"
             />
           </label>
@@ -280,7 +284,7 @@ export const YearlyGallery: React.FC = () => {
         </div>
       </div>
 
-      {/* Quick Helper Banner for Koena's Photos */}
+      {/* Public contribution notice */}
       <div className="my-4 p-4 rounded-2xl bg-gradient-to-r from-rose-50 via-pink-50 to-amber-50 border border-rose-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-rose-200/80 text-rose-700 flex items-center justify-center text-lg shrink-0">
@@ -288,24 +292,22 @@ export const YearlyGallery: React.FC = () => {
           </div>
           <div>
             <div className="font-bold text-gray-900 flex items-center gap-1.5">
-              <span>Have Koena&apos;s photos on your device?</span>
-              <span className="text-[10px] bg-rose-200 text-rose-800 px-2 py-0.5 rounded-full font-bold">
-                1-Click Ingest
-              </span>
+              <span>Share a photo memory with everyone</span>
             </div>
             <p className="text-gray-600 mt-0.5">
-              Click &ldquo;Batch Upload Photos&rdquo; above to select all 6 photos at once, or use the camera icon on each card below to replace them individually!
+              Photos added here are public. Only upload pictures you have permission to share. Batch photos use this year; use Add Memory to choose another year. Up to 20 photos (8 MB each).
             </p>
           </div>
         </div>
 
-        <label className="shrink-0 px-3.5 py-1.5 rounded-xl bg-white text-rose-700 font-bold border border-rose-200 hover:bg-rose-50 cursor-pointer shadow-2xs">
-          <span>Select 6 Photos</span>
+        <label className={`shrink-0 px-3.5 py-1.5 rounded-xl bg-white text-rose-700 font-bold border border-rose-200 shadow-2xs${isBatchUploading ? ' opacity-60 cursor-wait' : ' hover:bg-rose-50 cursor-pointer'}`}>
+          <span>{isBatchUploading ? 'Adding Photos...' : 'Choose Photos'}</span>
           <input
             type="file"
             multiple
             accept="image/*"
             onChange={handleBatchUpload}
+            disabled={isBatchUploading}
             className="hidden"
           />
         </label>
@@ -525,11 +527,12 @@ export const YearlyGallery: React.FC = () => {
                   />
                   <label className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold cursor-pointer shrink-0">
                     <Upload className="w-3.5 h-3.5" />
-                    <span>Upload</span>
+                    <span>{isUploadingPhoto ? 'Uploading...' : 'Upload'}</span>
                     <input
                       type="file"
                       accept="image/*"
                       onChange={handleFileUpload}
+                      disabled={isUploadingPhoto}
                       className="hidden"
                     />
                   </label>
@@ -582,7 +585,7 @@ export const YearlyGallery: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting || !formImageUrl}
+                  disabled={isSubmitting || isUploadingPhoto || !formImageUrl}
                   className="px-5 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold text-sm shadow-md shadow-rose-200 hover:opacity-95 disabled:opacity-50"
                 >
                   {isSubmitting ? 'Saving Memory...' : 'Save Picture ✨'}

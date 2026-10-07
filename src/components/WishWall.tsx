@@ -30,20 +30,27 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
     fetchWishes();
   }, []);
 
-  const fetchWishes = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch('/api/wishes');
-      const data = await res.json();
-      if (data.wishes) {
-        setWishes(data.wishes);
-      }
-    } catch (err) {
-      console.error('Failed to load wishes:', err);
-    } finally {
-      setLoading(false);
+const fetchWishes = async () => {
+  try {
+    setLoading(true);
+
+    const res = await fetch('/wishes.json');
+
+    if (!res.ok) {
+      throw new Error('Could not load wishes.json');
     }
-  };
+
+    const data = await res.json();
+
+    console.log('WISHES LOADED:', data);
+    
+    setWishes(data);
+  } catch (err) {
+    console.error('Failed to load wishes:', err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleGenerateWithGemini = async () => {
     setIsGeneratingAi(true);
