@@ -31,15 +31,24 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
     let isMounted = true;
     const loadWishes = async () => {
       try {
-        const res = await fetch('/api/wishes');
-        if (!res.ok) throw new Error('Could not load wishes.');
-        const data = await res.json();
-        if (isMounted) setWishes(data.wishes);
-      } catch (err) {
-        console.error('Failed to load wishes:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
+  const res = await fetch('/wishes.json');
+
+  if (!res.ok) {
+    throw new Error('Could not load wishes.json.');
+  }
+
+  const data = await res.json();
+
+  if (isMounted) {
+    setWishes(data);
+  }
+} catch (err) {
+  console.error('Failed to load wishes:', err);
+} finally {
+  if (isMounted) {
+    setLoading(false);
+  }
+}
     };
 
     loadWishes();
