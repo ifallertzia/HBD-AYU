@@ -81,7 +81,7 @@ export default function App() {
           <AstroProfile />
         </div>
 
-        {/* 4. Yearly Picture Gallery (2006 to 2026+) */}
+        {/* 4. Yearly Picture Gallery (2005 to 2026+) */}
         <div id="gallery">
           <YearlyGallery />
         </div>
@@ -107,16 +107,12 @@ export default function App() {
               cupcakeee
             </span>
           </div>
-          <p className="max-w-md text-gray-600">
-            Lovingly created for Koena to commemorate 7 October 2006, 11:30 PM.
-            May each year bring brighter smiles, sweeter memories, and endless joy to Koena.
+          <p className="max-w-md text-gray-600 px-2">
+            Lovingly created for <strong className="text-rose-600">Ayush</strong> (bbyyy) to commemorate 13 October 2005 — my favorite Taurus bull ♉ Moolank 4 🔮.
+            May each year bring brighter smiles, sweeter memories, and endless joy to my Ayu. 💖
           </p>
-          <div className="flex items-center gap-2 text-rose-500 font-medium text-[11px] mt-1">
-            <span>Built with Google AI Studio</span>
-            <span>&bull;</span>
-            <span>Gemini 3.8 Flash</span>
-            <span>&bull;</span>
-            <span>Happy 7th October Every Year</span>
+          <div className="flex flex-wrap items-center justify-center gap-2 text-rose-500 font-medium text-[11px] mt-1">
+            <span>Happy 13th October Every Year bbyyy 🎂</span>
           </div>
         </div>
       </footer>

@@ -51,117 +51,117 @@ const ai = new GoogleGenAI({
 const defaultWishes = [
   {
     id: 'wish-1',
-    name: 'Aria & Lily',
-    relationship: 'Best Friends Forever',
-    message: 'Happy 20th Birthday our sweetest Cupcake! May your year be as bright, radiant, and gentle as your Libra soul. Keep shining your Venusian warmth everywhere you go! 🧁✨',
-    sticker: '🧁',
+    name: 'Your Love 💖',
+    relationship: 'Girlfriend forever',
+    message: 'Happy 21st Birthday to my sweetest bbyyy Ayu! 🧁♉ You are my strongest, most loyal Taurus bull and my favorite Moolank 4 magic man. Thank you for protecting me, loving me so hard, and being my home. May this year give you everything your heart desires — I am right beside you always. 💖✨',
+    sticker: '💖',
     theme: 'rose',
-    likes: 12,
-    createdAt: '2026-10-06T18:30:00.000Z',
+    likes: 99,
+    createdAt: '2026-10-12T23:30:00.000Z',
   },
   {
     id: 'wish-2',
     name: 'Mom & Dad',
     relationship: 'Family',
-    message: 'On October 7th, 2006 at 11:30 PM, you came into our lives and made the entire world softer and sweeter. We are so endlessly proud of the beautiful, thoughtful woman you have grown to be. Happy Birthday darling!',
-    sticker: '💖',
+    message: 'On October 13th, 2005, you came into our lives, our strong little boy, and made the whole world brighter. We are so endlessly proud of the handsome, hardworking, kind man you have grown to be. Happy Birthday beta! 💖',
+    sticker: '🎂',
     theme: 'gold',
-    likes: 19,
-    createdAt: '2026-10-06T20:15:00.000Z',
+    likes: 45,
+    createdAt: '2026-10-13T00:05:00.000Z',
   },
   {
     id: 'wish-3',
-    name: 'Leo',
+    name: 'Best Buddy',
     relationship: 'Childhood Friend',
-    message: 'Happy Birthday to the most stylish Libra alive! Hope you get endless cupcakes, sweetest memories, and all the happiness this world has to offer.',
+    message: 'Happy Birthday bhai ♉! From our stupid childhood days to turning 21 today — you\'ve always been the most loyal, solid guy in the crew. Hope this year brings you all the bikes, games, success and happiness you deserve. Party hard! 🎉🏍️',
     sticker: '🎉',
     theme: 'lavender',
-    likes: 7,
-    createdAt: '2026-10-07T00:01:00.000Z',
+    likes: 23,
+    createdAt: '2026-10-13T00:30:00.000Z',
   },
   {
     id: 'wish-4',
-    name: 'Maya',
-    relationship: 'Soul Sister',
-    message: 'Blowing 20 virtual candles with you today! May every single wish you make tonight come true. You deserve the sweetest chapter ahead! 🌸🕯️',
-    sticker: '🕯️',
-    theme: 'peach',
-    likes: 9,
-    createdAt: '2026-10-07T08:20:00.000Z',
+    name: 'Squad',
+    relationship: 'College Friends',
+    message: 'Happy Birthday Ayush bhai! 🎂 The Taurus rock of our group, Moolank 4 legend with that magnetic Rahu aura. May 21 bring you endless vibes, trips, success, and all the happiness. Treat pending! 🍕🔥',
+    sticker: '🔥',
+    theme: 'mint',
+    likes: 31,
+    createdAt: '2026-10-13T08:00:00.000Z',
   },
 ];
 
 // Seed default year-wise memories if none exist
 const defaultMemories = [
   {
-    id: 'mem-2006',
-    year: 2006,
+    id: 'mem-2005',
+    year: 2005,
     age: 0,
-    title: 'The Sweet Arrival',
-    caption: 'Born at 11:30 PM on a crisp autumn Saturday night. October 7, 2006. A tiny blessing with a heart of gold.',
+    title: 'The Arrival of Our Taurus Boy',
+    caption: 'Born October 13, 2005 — a tiny baby boy with strong lungs and the calmest Taurus eyes, already ruling the room. ♉🔮',
     imageUrl: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80',
-    date: 'October 7, 2006',
+    date: 'October 13, 2005',
     tag: 'Birth',
   },
   {
-    id: 'mem-2007',
-    year: 2007,
+    id: 'mem-2006',
+    year: 2006,
     age: 1,
-    title: 'First Cupcake & Baby Steps',
-    caption: 'One whole year of giggles, curious wide eyes, and tasting the first swirl of vanilla strawberry frosting.',
-    imageUrl: 'https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=800&q=80',
-    date: 'October 7, 2007',
+    title: 'First Steps & First Cake Smash',
+    caption: 'One whole year of giggles, wobbly first steps, and face-planting into his very first birthday cake.',
+    imageUrl: 'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?auto=format&fit=crop&w=800&q=80',
+    date: 'October 13, 2006',
     tag: 'Milestone',
   },
   {
-    id: 'mem-2012',
-    year: 2012,
+    id: 'mem-2011',
+    year: 2011,
     age: 6,
-    title: 'Kindergarten & Fairytales',
-    caption: 'Wearing pretty bows, drawing colorful rainbows, and dreaming up enchanted kingdoms.',
+    title: 'Little Superhero Days',
+    caption: 'Caped crusader, toy-car collector, cricket-in-the-gully kid — already showing that Taurus stubbornness and big protective heart.',
     imageUrl: 'https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&w=800&q=80',
-    date: 'October 2012',
+    date: 'October 2011',
     tag: 'Childhood',
   },
   {
-    id: 'mem-2016',
-    year: 2016,
+    id: 'mem-2015',
+    year: 2015,
     age: 10,
-    title: 'Double Digits Celebration',
-    caption: 'Turned 10! Balloon bouquets, best friends sleepover, and non-stop laughter.',
+    title: 'Double Digits - Big 10',
+    caption: 'Turned 10! Bike rides with the boys, video game marathons, and the first hints of that signature Ayush smile.',
     imageUrl: 'https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=800&q=80',
-    date: 'October 7, 2016',
+    date: 'October 13, 2015',
     tag: 'Birthday',
   },
   {
-    id: 'mem-2022',
-    year: 2022,
+    id: 'mem-2021',
+    year: 2021,
     age: 16,
     title: 'Sweet Sixteen',
-    caption: '16 candles on the cake, sparkling fairy lights, and dreams blooming into reality.',
+    caption: 'Sixteen, already styled, already the most loyal friend in the group, already stealing hearts without trying. 💫',
     imageUrl: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80',
-    date: 'October 7, 2022',
-    tag: 'Sweet 16',
+    date: 'October 13, 2021',
+    tag: 'Teen Years',
   },
   {
-    id: 'mem-2024',
-    year: 2024,
+    id: 'mem-2023',
+    year: 2023,
     age: 18,
-    title: 'Eighteen & Free',
-    caption: 'Stepping into adulthood with grace, aesthetic wonder, and endless curiosity.',
-    imageUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
-    date: 'October 7, 2024',
+    title: 'Eighteen & Unstoppable',
+    caption: 'Stepping into manhood with Taurus strength, Rahu magnetism, and a Venusian softness only the lucky ones get to see.',
+    imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80',
+    date: 'October 13, 2023',
     tag: 'Adulthood',
   },
   {
     id: 'mem-2026',
     year: 2026,
-    age: 20,
-    title: 'Chapter Twenty: Golden Bloom',
-    caption: 'Two whole decades of wonder, kindness, and beauty. 20 candles burning bright for you tonight!',
+    age: 21,
+    title: 'Chapter Twenty-One: Taurus King',
+    caption: 'Twenty-one years of my favorite person. 21 candles burning bright for you tonight bbyyy — forever your biggest fan. 🧁♉💖',
     imageUrl: 'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=800&q=80',
-    date: 'October 7, 2026',
-    tag: '20th Birthday',
+    date: 'October 13, 2026',
+    tag: '21st Birthday',
   },
 ];
 
@@ -321,7 +321,7 @@ app.post('/api/memories', (req, res) => {
   }
 
   const memories = readMemories();
-  const age = Math.max(0, parsedYear - 2006);
+  const age = Math.max(0, parsedYear - 2005);
   const newMemory = {
     id: `mem-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
     year: parsedYear,
@@ -352,7 +352,7 @@ app.put('/api/memories/:id', (req, res) => {
   if (caption !== undefined) target.caption = caption.trim();
   if (year) {
     target.year = parseInt(year, 10);
-    target.age = Math.max(0, target.year - 2006);
+    target.age = Math.max(0, target.year - 2005);
   }
   if (tag) target.tag = tag;
   if (date) target.date = date;
@@ -377,16 +377,16 @@ app.post('/api/gemini/generate-wish', async (req, res) => {
   try {
     const { senderName, tone, relationship, customNotes } = req.body;
 
-    const prompt = `Write a heartfelt and personal birthday wish for Koena, whose birthday is 7 October 2006 (born at 11:30 PM, Libra sun sign ruled by Venus, known fondly as "Cupcake" or "Koena").
+    const prompt = `Write a heartfelt and personal birthday wish for Ayush (lovingly called "Ayu" or "bbyyy" by his girlfriend), whose birthday is 13 October 2005. He is a Taurus sun sign (♉), moolank 4 ruled by Rahu 🔮 — a loyal, grounded, magnetic guy with a Venusian soft heart.
 Sender name: ${senderName || 'A friend'}
 Relationship: ${relationship || 'Friend'}
-Tone requested: ${tone || 'Sweet & poetic'} (can be sweet, poetic, witty, or nostalgic)
+Tone requested: ${tone || 'Sweet & poetic'} (can be sweet, loving, poetic, witty, nostalgic, or playful-boyfriend-vibe)
 Additional details or inside memory: ${customNotes || 'None'}
 
 Rules:
-1. Make it warm, authentic, touching, and celebratory for Koena.
-2. Mention her name Koena and something delightful about her grace, kindness, or sweet Libra energy.
-3. Keep it between 2 to 4 sentences, ready to sign and share on her birthday guestbook.
+1. Make it warm, authentic, touching, and celebratory for a boy (use he/him pronouns).
+2. Mention his name Ayush (or Ayu/bbyyy if tone is romantic) and something delightful about his Taurus loyalty, his protective warmth, his Rahu magnetism, or his Venusian charm.
+3. Keep it between 2 to 4 sentences, ready to sign and share on his birthday guestbook.
 4. Output only the wish text itself, without any introductory or concluding meta remarks.`;
 
     const response = await ai.models.generateContent({
@@ -394,13 +394,13 @@ Rules:
       contents: prompt,
     });
 
-    const wishText = response.text?.trim() || 'Wishing you the sweetest, most magical birthday dearest Koena! May your year be filled with love, laughter, and endless cupcakes! 🧁✨';
+    const wishText = response.text?.trim() || 'Wishing you the sweetest, most magical birthday bbyyy Ayush! 🧁♉ May your year be filled with love, laughter, endless adventures, and all the success your Moolank 4 magic can attract. ✨';
     res.json({ wishText });
   } catch (error: any) {
     console.error('Gemini generate-wish error:', error);
     res.status(500).json({
       error: 'Failed to generate wish with Gemini',
-      fallback: 'Happy Birthday sweet Koena! May your year ahead be as lovely and luminous as your radiant spirit. 🧁✨',
+      fallback: 'Happy Birthday bbyyy Ayush! ♉🔮 May your Taurus year ahead be as strong, warm, and wonderful as you are. Love you always! 🧁✨',
     });
   }
 });
@@ -411,15 +411,15 @@ app.post('/api/gemini/oracle-reading', async (req, res) => {
     const { currentYear, focus } = req.body;
     const year = currentYear || 2026;
 
-    const prompt = `Provide an astrological reading and Venusian blessing for Koena, born on 7 October 2006 at 11:30 PM (Sun in Libra, Moon in Aries, Venus ruled, Air element).
-Current year/milestone: ${year} (Turning ${year - 2006} years old!).
-Focus theme requested: ${focus || 'Love, Creativity, and Life Path'}.
+    const prompt = `Provide an astrological reading and Venusian+Rahu blessing for Ayush (boyfriend / "bbyyy"), born on 13 October 2005 (Sun in Taurus ♉ — Earth sign, Fixed modality, ruled by Venus, moolank 4 ruled by Rahu). Use he/him pronouns.
+Current year/milestone: ${year} (Turning ${year - 2005} years old!).
+Focus theme requested: ${focus || 'Love, Success, Creativity, and Life Path'}.
 
 Provide a response in JSON format with the following keys:
-- cosmicBlessing: A 2-sentence poetic blessing from Venus and the stars addressing Koena.
-- planetaryHighlights: An inspiring paragraph about Koena's current astrological cycle, growth, and natural harmonious talents.
-- luckyElements: An array of 3 sweet tokens (e.g. lucky gem, scent, power flower).
-- secretSuperpower: Her hidden strength according to her birth date and time (11:30 PM late night Libra).`;
+- cosmicBlessing: A 2-sentence poetic blessing from Venus, Rahu, and the stars addressing Ayush ("bbyyy").
+- planetaryHighlights: An inspiring paragraph about Ayush's current astrological cycle, his Taurus loyalty & strength, his Moolank 4 magnetism & unconventional genius, and his growth ahead.
+- luckyElements: An array of 3 tokens (lucky gem like Gomed/Hessonite or Emerald, scent, power flower, or lucky item).
+- secretSuperpower: His hidden strength according to his Taurus sun + Moolank 4 Rahu birth chart.`;
 
     const response = await ai.models.generateContent({
       model: 'gemini-3.8-flash',
@@ -435,10 +435,10 @@ Provide a response in JSON format with the following keys:
     console.error('Gemini oracle error:', error);
     res.json({
       reading: {
-        cosmicBlessing: 'May Venus shower your path with effortless beauty, radiant connections, and eternal joy as your new solar cycle begins.',
-        planetaryHighlights: 'Born under the midnight harmony of Libra with the passionate pulse of an Aries moon, you possess the rare gift of balancing fierce ambition with gentle grace.',
-        luckyElements: ['Pink Tourmaline', 'Sweet Peony Blossom', 'Champagne Amber'],
-        secretSuperpower: 'The Midnight Diplomat: You instinctively understand people\'s hearts and turn any room into a haven of warmth.',
+        cosmicBlessing: 'May Venus bless your path with loyal love, rich pleasures, and quiet abundance; may Rahu ignite your magnetic aura so every dream you chase magnetically finds its way to you, bbyyy ♉.',
+        planetaryHighlights: 'Born a steady Taurus bull with Moolank 4 Rahu fire in his veins, you blend the reliability of Earth with a revolutionary, magnetic mind that breaks rules and builds empires. Your 20th solar cycle activates deep personal power — your loyalty is your superpower, your taste is your brand, and your quiet determination moves mountains.',
+        luckyElements: ['Gomed (Hessonite)', 'Sandalwood Scent', 'Deep Rose & Royal Blue'],
+        secretSuperpower: 'The Immovable Force: when you love something or someone, nothing can shake you — and your Rahu-charged intuition sees shortcuts and opportunities others miss entirely.',
       },
     });
   }

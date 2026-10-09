@@ -1,42 +1,42 @@
 [
   {
+    "id": "wish-1",
+    "name": "Your Love 💖",
+    "relationship": "Girlfriend forever",
+    "message": "Happy 20th Birthday to my sweetest bbyyy Ayu! 🧁♉ You are my strongest Taurus bull and my favorite Moolank 4 magic man. Thank you for protecting me, loving me so hard, and being my home. May this year give you everything your heart desires — I am right beside you always. 💖✨",
+    "sticker": "💖",
+    "theme": "rose",
+    "likes": 99,
+    "createdAt": "2026-10-12T23:30:00.000Z"
+  },
+  {
     "id": "wish-2",
     "name": "Mom & Dad",
     "relationship": "Family",
-    "message": "On October 7th, 2006 at 11:30 PM, you came into our lives, sweet Koena, and made the whole world softer and brighter. We are so endlessly proud of the graceful, kind, thoughtful woman you have grown to be. Happy Birthday our princess! 💖",
-    "sticker": "💖",
+    "message": "On October 13th, 2006, you came into our lives, our strong little boy, and made the whole world brighter. We are so endlessly proud of the handsome, hardworking, kind man you have grown to be. Happy Birthday beta! 💖",
+    "sticker": "🎂",
     "theme": "gold",
-    "likes": 23,
-    "createdAt": "2026-10-06T20:15:00.000Z"
+    "likes": 45,
+    "createdAt": "2026-10-13T00:05:00.000Z"
   },
   {
     "id": "wish-3",
-    "name": "Ashutosh",
-    "relationship": "With All My Heart",
-    "message": "To the sweetest Koena on her 20th milestone: You bring peace, joy, and so much beauty into this world. May every candle you blow tonight fulfill your deepest dreams. Always smiling for you! 🎂🌸",
-    "sticker": "🌸",
-    "theme": "peach",
-    "likes": 28,
-    "createdAt": "2026-10-06T22:00:00.000Z"
+    "name": "Best Buddy",
+    "relationship": "Childhood Friend",
+    "message": "Happy Birthday bhai ♉! From our stupid childhood days to turning 20 today — you've always been the most loyal, solid guy in the crew. Hope this year brings you all the bikes, games, success and happiness you deserve. Party hard! 🎉🏍️",
+    "sticker": "🎉",
+    "theme": "lavender",
+    "likes": 23,
+    "createdAt": "2026-10-13T00:30:00.000Z"
   },
   {
     "id": "wish-4",
-    "name": "Leo",
-    "relationship": "Childhood Friend",
-    "message": "Happy Birthday Koena, the most stylish Libra alive! From your cute childhood days to turning 20 today, you have always had the warmest heart. Wishing you endless joy!",
-    "sticker": "🎉",
-    "theme": "lavender",
-    "likes": 8,
-    "createdAt": "2026-10-07T00:01:00.000Z"
-  },
-  {
-    "id": "wish-5",
-    "name": "Maya",
-    "relationship": "Soul Sister",
-    "message": "Blowing 20 virtual candles with you today Koena! May your year ahead be as breathtaking and lovely as you are. Love you so much! 🌸🕯️",
-    "sticker": "🕯️",
+    "name": "Squad",
+    "relationship": "College Friends",
+    "message": "Happy Birthday Ayush bhai! 🎂 The Taurus rock of our group, Moolank 4 legend with that magnetic Rahu aura. May 20 bring you endless vibes, trips, success, and all the happiness. Treat pending! 🍕🔥",
+    "sticker": "🔥",
     "theme": "mint",
-    "likes": 11,
-    "createdAt": "2026-10-07T08:20:00.000Z"
+    "likes": 31,
+    "createdAt": "2026-10-13T08:00:00.000Z"
   }
 ]

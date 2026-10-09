@@ -7,7 +7,7 @@ interface AgeCounterProps {
 }
 
 export const AgeCounter: React.FC<AgeCounterProps> = ({ ageData }) => {
-  const formattedBirthDate = '7 October 2006, 11:30 PM';
+  const formattedBirthDate = '13 October 2005 ♉ Moolank 4';
 
   return (
     <section className="rounded-3xl bg-white/80 backdrop-blur-md p-6 md:p-8 border border-rose-100 shadow-xl shadow-rose-100/40 relative overflow-hidden">
@@ -21,23 +21,23 @@ export const AgeCounter: React.FC<AgeCounterProps> = ({ ageData }) => {
             <Calendar className="w-3.5 h-3.5 text-rose-500" />
             <span>Official Birth Record</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
-            Koena&apos;s Life Chronology &amp; Exact Age
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
+            Ayu&apos;s Life Chronology &amp; Exact Age
           </h2>
-          <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-0.5">
-            <Clock className="w-3.5 h-3.5 text-rose-400" />
-            <span>Born: <strong className="text-gray-700">{formattedBirthDate}</strong> (Saturday Night) &bull; Koena</span>
+          <p className="text-sm text-gray-500 flex items-center gap-1.5 mt-0.5 flex-wrap">
+            <Clock className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+            <span>Born: <strong className="text-gray-700">{formattedBirthDate}</strong> &bull; Ayush (bbyyy)</span>
           </p>
         </div>
 
         {/* Milestone Badge */}
-        <div className="flex items-center gap-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white px-5 py-3 rounded-2xl shadow-md shadow-pink-200">
-          <div className="text-3xl font-black font-serif">
+        <div className="flex items-center gap-3 bg-gradient-to-r from-rose-500 to-pink-500 text-white px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl shadow-md shadow-pink-200 self-start sm:self-auto">
+          <div className="text-2xl sm:text-3xl font-black font-serif">
             {ageData.years}
           </div>
           <div className="text-xs leading-tight">
-            <span className="block font-bold uppercase tracking-wider">Years of Sweetness</span>
-            <span className="opacity-90">Turning {ageData.years + 1} next</span>
+            <span className="block font-bold uppercase tracking-wider">Years of Ayu ♉</span>
+            <span className="opacity-90">Turning {ageData.years + 1} on Oct 13</span>
           </div>
         </div>
       </div>
@@ -92,16 +92,16 @@ export const AgeCounter: React.FC<AgeCounterProps> = ({ ageData }) => {
           </div>
         </div>
 
-        <div className="bg-pink-50/70 border border-pink-200/60 rounded-2xl p-4 flex items-center gap-3.5">
-          <div className="w-10 h-10 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center shrink-0">
-            <Heart className="w-5 h-5 text-rose-500 animate-pulse" />
+        <div className="bg-pink-50/70 border border-pink-200/60 rounded-2xl p-3.5 sm:p-4 flex items-center gap-3 sm:gap-3.5">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center shrink-0">
+            <Heart className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-rose-500 animate-pulse" />
           </div>
-          <div>
-            <div className="text-base font-black text-gray-800 font-mono">
+          <div className="min-w-0">
+            <div className="text-sm sm:text-base font-black text-gray-800 font-mono truncate">
               ~{ageData.totalHeartbeats.toLocaleString()}
             </div>
             <div className="text-xs text-pink-800/80 font-medium">
-              Loving Heartbeats Beaten
+              Heartbeats of Love
             </div>
           </div>
         </div>
@@ -121,11 +121,11 @@ export const AgeCounter: React.FC<AgeCounterProps> = ({ ageData }) => {
         </div>
       </div>
 
-      {/* Countdown to Next Birthday on October 7 */}
+      {/* Countdown to Next Birthday on October 13 */}
       <div className="mt-5 p-4 rounded-2xl bg-gradient-to-r from-rose-100/70 via-pink-100/60 to-amber-100/70 border border-rose-200/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
         <div>
           <div className="text-xs font-bold uppercase tracking-wider text-rose-800">
-            Countdown to Next 7 October (11:30 PM)
+            Countdown to Next 13 October (Taurus Day ♉)
           </div>
           <div className="text-sm text-gray-700 font-medium">
             {ageData.isBirthdayToday

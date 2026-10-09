@@ -27,8 +27,8 @@ export const AstroProfile: React.FC = () => {
     } catch (err) {
       console.error('Failed to get oracle reading:', err);
       setOracleReading({
-        cosmicBlessing: 'May Venus guide your every step with effortless charm, gentle joy, and boundless sweet inspiration.',
-        planetaryHighlights: 'Your 20th solar cycle activates deep creative mastery. Your Libra grace and passionate Aries moon harmonize into unmatched charismatic leadership.',
+        cosmicBlessing: 'May Venus guide your every step with effortless charm, gentle joy, and boundless sweet inspiration, bbyyy.',
+        planetaryHighlights: 'Your 21st solar cycle activates deep personal power. Your Taurus loyalty and strength, combined with Moolank 4 Rahu magnetism, make you an unstoppable force — grounded yet magnetic, soft-hearted yet unshakable.',
         luckyElements: ['Pink Tourmaline', 'Rose Water Scent', 'Sweet Peony Blossom'],
         secretSuperpower: 'The Midnight Diplomat: You instinctively make everyone feel seen, treasured, and loved.',
       });
@@ -50,19 +50,19 @@ export const AstroProfile: React.FC = () => {
             <Sun className="w-3.5 h-3.5 text-amber-500" />
             <span>Natal Chart &amp; Celestial Essence</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
-            Koena&apos;s Astrological Profile: The Venusian Libra
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
+            Ayush&apos;s Astrological Profile: Taurus Bull ♉ Moolank 4
           </h2>
           <p className="text-sm text-gray-500">
-            Natal chart for Koena &bull; 7 October 2006 at 11:30 PM (Midnight Libra with Aries Moon).
+            Natal chart for bbyyy Ayu &bull; 13 October 2005 ♉ Taurus &bull; Moolank 4 ruled by Rahu 🔮.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-4 py-2 rounded-2xl shadow-sm text-sm font-medium">
-          <span className="text-2xl">♎</span>
+        <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-4 py-2 rounded-2xl shadow-sm text-sm font-medium">
+          <span className="text-2xl">♉</span>
           <div>
-            <div className="font-bold leading-none">Libra Sun</div>
-            <div className="text-[11px] opacity-90">Venus Governed</div>
+            <div className="font-bold leading-none">Taurus Sun</div>
+            <div className="text-[11px] opacity-90">Venus + Rahu (Moolank 4)</div>
           </div>
         </div>
       </div>
@@ -76,7 +76,7 @@ export const AstroProfile: React.FC = () => {
           <div className="text-base font-bold text-gray-800 mt-1">
             {ASTROLOGICAL_PROFILE.sunSign} {ASTROLOGICAL_PROFILE.sunSymbol}
           </div>
-          <div className="text-xs text-gray-500 mt-0.5">Harmonizer &amp; Artist</div>
+          <div className="text-xs text-gray-500 mt-0.5">The Loyal Bull 🐂</div>
         </div>
 
         <div className="p-4 rounded-2xl bg-gradient-to-b from-purple-50/80 to-white border border-purple-100 shadow-2xs">
@@ -157,7 +157,7 @@ export const AstroProfile: React.FC = () => {
         </div>
       </div>
 
-      {/* Gemini AI Powered: Venus Cupcake Oracle Reading */}
+      {/* Cupcake Oracle Reading */}
       <div className="mt-6 p-5 rounded-2xl bg-gradient-to-br from-purple-50/70 via-pink-50/50 to-rose-50/80 border border-purple-200/80 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
@@ -167,12 +167,9 @@ export const AstroProfile: React.FC = () => {
             <div>
               <h4 className="text-sm font-bold text-purple-950 flex items-center gap-1.5">
                 <span>Venus Cupcake Oracle</span>
-                <span className="text-[10px] font-semibold bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
-                  Google AI Studio &bull; Gemini
-                </span>
               </h4>
               <p className="text-xs text-purple-800/80">
-                Receive a cosmic blessing customized for Koena&apos;s 7 Oct 2006 chart.
+                Receive a cosmic blessing customized for Ayu&apos;s 13 Oct 2005 Taurus chart ♉.
               </p>
             </div>
           </div>
@@ -186,7 +183,7 @@ export const AstroProfile: React.FC = () => {
               <option value="Love, Creativity & Soul Bloom">Theme: Love &amp; Soul Bloom</option>
               <option value="Career, Ambition & Radiance">Theme: Ambition &amp; Radiance</option>
               <option value="Friendships & Social Harmony">Theme: Friendships &amp; Charm</option>
-              <option value="Turning 20: Golden Milestone Blessing">Theme: 20th Milestone Blessing</option>
+              <option value="Turning 21: Golden Milestone Blessing">Theme: 21st Milestone Blessing</option>
             </select>
 
             <button
