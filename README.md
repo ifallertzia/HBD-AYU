@@ -41,3 +41,44 @@ shows it on the Polaroid frame (re-running `npm run photos` keeps your titles):
   "caption": "Ayu, age 6, refusing to leave the water 🌊"
 }
 ```
+
+## Deploying
+
+### Vercel (static frontend — the default)
+
+`vercel.json` pins this up: framework **Vite**, build **`npm run build`**, output **`dist`**.
+Import the repo in Vercel (or run `vercel` in the project) and that's the whole setup —
+no env vars needed, and the site is fully working: photo wall, Photo Mode, gallery and
+wish wall all read static files.
+
+A static host has no Express process behind it, so the app detects that on load
+(`GET /api/health`) and switches its write features to saving in the visitor's browser:
+
+| Feature | Vercel static | With the Node server |
+| --- | --- | --- |
+| Photo wall + Photo Mode (all of `public/photos/ayush`) | ✅ | ✅ |
+| Yearly gallery from `public/memories.json` | ✅ | ✅ (live from `/api/memories`) |
+| Wish wall reads `public/wishes.json` | ✅ | ✅ (live from `/api/wishes`) |
+| Posting / liking a wish | ✅ saved on that device | ✅ saved for everyone |
+| Uploading photos from the site | ➖ off, with a note | ✅ |
+| Gemini oracle & Magic Wish Helper | ➖ hidden (the Oracle falls back to its written reading) | ✅ with `GEMINI_API_KEY` |
+
+So nobody ever sees a "could not save" error on the static deploy — the buttons that need
+a server are either hidden or explain themselves.
+
+Want the writes to be shared too? Two options:
+
+1. Deploy the same repo anywhere that runs a Node process (`npm run dev` / `npm start`,
+   port from `$PORT`) — the Express server then serves `dist` in `NODE_ENV=production`.
+2. Keep Vercel and set `GEMINI_API_KEY` in *Project → Settings → Environment Variables*
+   plus a `rewrites` rule pointing `/api/*` at that server (or move `data/*.json` to Vercel
+   Blob/KV — the storage is the only part that can't live on Vercel's read-only filesystem).
+
+### Local
+
+```bash
+npm install
+npm run dev      # http://localhost:3000  (Express + Vite, all features live)
+npm run build    # production bundle in dist/
+npm run lint     # tsc --noEmit
+```

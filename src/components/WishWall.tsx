@@ -1,7 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Wish } from '../types';
 import { Heart, Send, Sparkles, Wand2, Loader2, MessageSquareHeart, User, Trash2, Share2 } from 'lucide-react';
 import { birthdayAudio } from '../utils/audio';
+import { detectBackend, useBackendMode } from '../utils/backend';
+import {
+  bumpLocalLike,
+  createLocalWishId,
+  hideLocalWish,
+  readHiddenWishIds,
+  readLocalLikeDeltas,
+  readLocalWishes,
+  saveLocalWish,
+} from '../utils/localWishes';
 import confetti from '../utils/confetti';
 
 interface WishWallProps {
@@ -9,8 +19,11 @@ interface WishWallProps {
 }
 
 export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
-  const [wishes, setWishes] = useState<Wish[]>([]);
+  const { mode: backendMode, staticOnly } = useBackendMode();
+  const [baseWishes, setBaseWishes] = useState<Wish[]>([]);
   const [loading, setLoading] = useState(true);
+  // Bumped whenever this device's own saved wishes/likes change.
+  const [localTick, setLocalTick] = useState(0);
 
   // Form states
   const [name, setName] = useState('');
@@ -20,6 +33,7 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
   const [theme, setTheme] = useState<'rose' | 'gold' | 'lavender' | 'peach' | 'mint'>('rose');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [localNote, setLocalNote] = useState('');
 
   // Gemini AI Assistant state
   const [aiTone, setAiTone] = useState('Sweet & Poetic');
@@ -27,37 +41,51 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
   const [showAiHelper, setShowAiHelper] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    const loadWishes = async () => {
-      try {
-  const res = await fetch('/wishes.json');
+  // On a static deploy, wishes added here live in the browser — layered over the
+  // published /wishes.json so the wall never looks empty or throws at you.
+  const wishes = useMemo(() => {
+    if (!staticOnly) return baseWishes;
+    const hidden = new Set(readHiddenWishIds());
+    const deltas = readLocalLikeDeltas();
+    const local = readLocalWishes().filter((wish) => !hidden.has(wish.id));
+    return [...local, ...baseWishes]
+      .filter((wish) => !hidden.has(wish.id))
+      .map((wish) =>
+        deltas[wish.id] ? { ...wish, likes: (wish.likes || 0) + deltas[wish.id] } : wish,
+      )
+      .sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+  }, [baseWishes, localTick, staticOnly]);
 
-  if (!res.ok) {
-    throw new Error('Could not load wishes.json.');
-  }
-
-  const data = await res.json();
-
-  if (isMounted) {
-    setWishes(data);
-  }
-} catch (err) {
-  console.error('Failed to load wishes:', err);
-} finally {
-  if (isMounted) {
-    setLoading(false);
-  }
-}
-    };
-
-    loadWishes();
-    const refreshInterval = window.setInterval(loadWishes, 5000);
-    return () => {
-      isMounted = false;
-      window.clearInterval(refreshInterval);
-    };
+  const loadWishes = useCallback(async () => {
+    try {
+      const online = (await detectBackend()) === 'server';
+      const res = await fetch(online ? '/api/wishes' : '/wishes.json');
+      if (!res.ok) throw new Error('Could not load the wish wall.');
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : Array.isArray(data?.wishes) ? data.wishes : [];
+      setBaseWishes(list);
+    } catch (err) {
+      console.error('Failed to load wishes:', err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (backendMode === 'checking') return;
+    loadWishes();
+    if (backendMode !== 'server') {
+      // Nothing to poll on a static host; just stay in step with other tabs.
+      const onStorage = () => {
+        setLocalTick((tick) => tick + 1);
+        loadWishes();
+      };
+      window.addEventListener('storage', onStorage);
+      return () => window.removeEventListener('storage', onStorage);
+    }
+    const refreshInterval = window.setInterval(loadWishes, 5000);
+    return () => window.clearInterval(refreshInterval);
+  }, [backendMode, loadWishes]);
 
   const handleGenerateWithGemini = async () => {
     setIsGeneratingAi(true);
@@ -88,12 +116,48 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
     }
   };
 
+  const celebrate = () => {
+    birthdayAudio.playSparkleChime();
+    try {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.7 },
+        colors: ['#f472b6', '#fbbf24', '#c084fc'],
+      });
+    } catch {
+      // ignore
+    }
+  };
+
   const handleSubmitWish = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
 
     setIsSubmitting(true);
     setSubmitError('');
+    setLocalNote('');
+
+    if (staticOnly) {
+      saveLocalWish({
+        id: createLocalWishId(),
+        name: name.trim(),
+        relationship,
+        message: message.trim(),
+        sticker,
+        theme,
+        likes: 0,
+        createdAt: new Date().toISOString(),
+      });
+      setLocalTick((tick) => tick + 1);
+      celebrate();
+      setName('');
+      setMessage('');
+      setAiCustomNotes('');
+      setLocalNote('Saved on this device 🤍 — run the wishes server to share it with everyone.');
+      setIsSubmitting(false);
+      return;
+    }
     try {
       const res = await fetch('/api/wishes', {
         method: 'POST',
@@ -110,18 +174,8 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
       if (!res.ok) throw new Error(data.error || 'Could not save your wish.');
       if (!data.wish) throw new Error('The server did not confirm that your wish was saved.');
 
-      birthdayAudio.playSparkleChime();
-      try {
-        confetti({
-          particleCount: 50,
-          spread: 60,
-          origin: { y: 0.7 },
-          colors: ['#f472b6', '#fbbf24', '#c084fc'],
-        });
-      } catch {
-        // ignore
-      }
-      setWishes((prev) => [data.wish, ...prev]);
+      celebrate();
+      setBaseWishes((prev) => [data.wish, ...prev]);
       setName('');
       setMessage('');
       setAiCustomNotes('');
@@ -135,11 +189,16 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
 
   const handleLikeWish = async (id: string) => {
     birthdayAudio.playMusicBoxNote(880, 0.4, 0.1);
+    if (staticOnly) {
+      bumpLocalLike(id);
+      setLocalTick((tick) => tick + 1);
+      return;
+    }
     try {
       const res = await fetch(`/api/wishes/${id}/like`, { method: 'POST' });
       const data = await res.json();
       if (data.success) {
-        setWishes((prev) =>
+        setBaseWishes((prev) =>
           prev.map((w) => (w.id === id ? { ...w, likes: data.likes } : w))
         );
       }
@@ -152,11 +211,16 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
     if (!window.confirm(`Are you sure you want to delete this wish from "${wishName}"?`)) {
       return;
     }
+    if (staticOnly) {
+      hideLocalWish(id);
+      setLocalTick((tick) => tick + 1);
+      return;
+    }
     try {
       const res = await fetch(`/api/wishes/${id}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
-        setWishes((prev) => prev.filter((w) => w.id !== id));
+        setBaseWishes((prev) => prev.filter((w) => w.id !== id));
       }
     } catch (err) {
       console.error('Failed to delete wish:', err);
@@ -313,14 +377,16 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
                 <label className="block text-xs font-semibold text-gray-700">
                   Your Birthday Message
                 </label>
-                <button
-                  type="button"
-                  onClick={() => setShowAiHelper(!showAiHelper)}
-                  className="inline-flex items-center gap-1 text-[11px] text-purple-700 font-semibold hover:text-purple-900 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200"
-                >
-                  <Wand2 className="w-3 h-3 text-purple-600" />
-                  <span>Magic Wish Helper ✨</span>
-                </button>
+                {!staticOnly && (
+                  <button
+                    type="button"
+                    onClick={() => setShowAiHelper(!showAiHelper)}
+                    className="inline-flex items-center gap-1 text-[11px] text-purple-700 font-semibold hover:text-purple-900 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200"
+                  >
+                    <Wand2 className="w-3 h-3 text-purple-600" />
+                    <span>Magic Wish Helper ✨</span>
+                  </button>
+                )}
               </div>
 
               {/* Wish helper expandable drawer */}
@@ -393,6 +459,11 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
             {submitError && (
               <p role="alert" className="text-sm text-red-600">
                 {submitError}
+              </p>
+            )}
+            {localNote && (
+              <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-2.5 py-1.5">
+                {localNote}
               </p>
             )}
           </form>

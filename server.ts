@@ -238,6 +238,17 @@ app.post('/api/photos', (req, res) => {
   res.status(201).json({ imageUrl: `/uploads/${fileName}` });
 });
 
+// Tiny probe used by the frontend: when this answers with JSON, the write features
+// (wishes, uploads, Gemini) are live. On a static-only deploy it 404s and the UI
+// falls back to saving in the browser instead of erroring out.
+app.get('/api/health', (_req, res) => {
+  res.json({
+    ok: true,
+    writable: true,
+    gemini: Boolean(process.env.GEMINI_API_KEY || process.env.VITE_API_KEY),
+  });
+});
+
 app.get('/api/wishes', (_req, res) => {
   try {
     const wishes = readWishes();

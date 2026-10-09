@@ -153,7 +153,8 @@ export const PhotoModeOverlay: React.FC<PhotoModeOverlayProps> = ({ photos, star
   useEffect(() => {
     const strip = stripRef.current;
     if (!strip) return;
-    strip.querySelector('[data-active="true"]')?.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+    const activeThumb = strip.querySelector('[data-active="true"]');
+    activeThumb?.scrollIntoView?.({ block: 'nearest', inline: 'center', behavior: 'smooth' });
   }, [position]);
 
   const love = useCallback((photo: WallPhoto) => {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { MemoryPhoto } from '../types';
 import { Image, Plus, Trash2, Calendar, Maximize2, X, Sparkles, Upload, Camera, CheckCircle2 } from 'lucide-react';
 import { birthdayAudio } from '../utils/audio';
+import { detectBackend, useBackendMode } from '../utils/backend';
 import confetti from '../utils/confetti';
 
 const MAX_PHOTO_SIZE_BYTES = 8 * 1024 * 1024;
@@ -42,6 +43,7 @@ interface YearlyGalleryProps {
 }
 
 export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, photoCount = 0 }) => {
+  const { staticOnly } = useBackendMode();
   const [memories, setMemories] = useState<MemoryPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState<number | 'ALL'>('ALL');
@@ -68,15 +70,17 @@ export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, 
   try {
     setLoading(true);
 
-    const res = await fetch('/memories.json');
+    // With the API server we get the live list; on a static deploy, the published JSON.
+    const online = (await detectBackend()) === 'server';
+    const res = await fetch(online ? '/api/memories' : '/memories.json');
 
     if (!res.ok) {
-      throw new Error('Could not load memories.json');
+      throw new Error('Could not load the gallery.');
     }
 
     const data = await res.json();
 
-    setMemories(data);
+    setMemories(Array.isArray(data) ? data : Array.isArray(data?.memories) ? data.memories : []);
   } catch (err) {
     console.error('Failed to load memories:', err);
   } finally {
@@ -89,10 +93,20 @@ export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, 
     setTimeout(() => setUploadToast(null), 3500);
   };
 
+  // Uploading needs the Express API. On a static host we say so instead of failing.
+  const blockedOnStaticHost = () => {
+    if (!staticOnly) return false;
+    showNotification(
+      'Static deploy: this gallery reads public/photos. Drop files there and run `npm run photos`, or start the API server to upload here.',
+    );
+    return true;
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    if (blockedOnStaticHost()) return;
 
     setIsUploadingPhoto(true);
     try {
@@ -109,6 +123,7 @@ export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, 
     const file = e.target.files?.[0];
     e.target.value = '';
     if (!file) return;
+    if (blockedOnStaticHost()) return;
 
     try {
       const imageUrl = await uploadPhoto(file);
@@ -133,6 +148,7 @@ export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, 
     const files = e.target.files;
     e.target.value = '';
     if (!files || files.length === 0) return;
+    if (blockedOnStaticHost()) return;
     const fileList = Array.from(files);
     if (fileList.length > 20) {
       showNotification('Choose up to 20 photos at a time.');
@@ -183,6 +199,7 @@ export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, 
   const handleAddMemory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formTitle.trim() || !formImageUrl.trim()) return;
+    if (blockedOnStaticHost()) return;
 
     setIsSubmitting(true);
     try {
@@ -313,6 +330,12 @@ export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, 
             <p className="text-gray-600 mt-0.5">
               Photos added here are public. Only upload pictures you have permission to share. Batch photos use this year; use Add Memory to choose another year. Up to 20 photos (8 MB each).
             </p>
+            {staticOnly && (
+              <p className="mt-1 text-[11px] font-semibold text-amber-700">
+                Static deploy · uploads are off — add pictures to <code className="px-1 rounded bg-amber-100">public/photos/ayush</code> and run{' '}
+                <code className="px-1 rounded bg-amber-100">npm run photos</code>.
+              </p>
+            )}
           </div>
         </div>
 
