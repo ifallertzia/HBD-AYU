@@ -135,7 +135,7 @@ export const YearlyGallery: React.FC = () => {
     }
 
     setIsBatchUploading(true);
-    showNotification(`Adding ${fileList.length} photos to Koena's public gallery...`);
+    showNotification(`Adding ${fileList.length} photos to Ayush's public gallery...`);
     const addedMemories: MemoryPhoto[] = [];
     const errors: string[] = [];
 
@@ -190,7 +190,7 @@ export const YearlyGallery: React.FC = () => {
           caption: formCaption,
           imageUrl: formImageUrl,
           tag: formTag,
-          date: formDate || `October 7, ${formYear}`,
+          date: formDate || `October 13, ${formYear}`,
         }),
       });
       const data = await res.json();
@@ -251,11 +251,11 @@ export const YearlyGallery: React.FC = () => {
             <Image className="w-3.5 h-3.5 text-rose-500" />
             <span>Year-By-Year Scrapbook</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
-            Koena&apos;s Yearly Memory Gallery
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
+            Ayush&apos;s Yearly Memory Gallery
           </h2>
           <p className="text-sm text-gray-500">
-            Chronological photo archive from Koena&apos;s birth (2006) up through 2026 and future years.
+            Chronological photo archive from bbyyy Ayu&apos;s birth (2005) up through 2026 and future years.
           </p>
         </div>
 
@@ -336,7 +336,7 @@ export const YearlyGallery: React.FC = () => {
                 : 'bg-rose-50/70 text-gray-700 hover:bg-rose-100 border border-rose-100'
             }`}
           >
-            {yr} (Age {yr - 2006})
+            {yr} (Age {yr - 2005})
           </button>
         ))}
       </div>
@@ -449,7 +449,7 @@ export const YearlyGallery: React.FC = () => {
               <div className="flex items-center gap-2">
                 <span className="text-xl">📸</span>
                 <h3 className="text-lg font-serif font-bold text-gray-800">
-                  Store a Memory for Koena
+                  Store a Memory for Ayush
                 </h3>
               </div>
               <button
@@ -464,11 +464,11 @@ export const YearlyGallery: React.FC = () => {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">
-                    Year (2006 - 2030)
+                    Year (2005 - 2030)
                   </label>
                   <input
                     type="number"
-                    min={2006}
+                    min={2005}
                     max={2030}
                     value={formYear}
                     onChange={(e) => setFormYear(parseInt(e.target.value, 10))}
@@ -476,7 +476,7 @@ export const YearlyGallery: React.FC = () => {
                     required
                   />
                   <span className="text-[10px] text-gray-400">
-                    Age: {Math.max(0, formYear - 2006)} years old
+                    Age: {Math.max(0, formYear - 2005)} years old
                   </span>
                 </div>
 
@@ -505,7 +505,7 @@ export const YearlyGallery: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. 20th Birthday Celebration / First Trip"
+                  placeholder="e.g. 21st Birthday Celebration / First Trip"
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   className="w-full text-sm px-3 py-2 rounded-xl border border-gray-200 focus:outline-hidden focus:ring-2 focus:ring-rose-400"
@@ -568,7 +568,7 @@ export const YearlyGallery: React.FC = () => {
                 </label>
                 <input
                   type="text"
-                  placeholder={`e.g. October 7, ${formYear}`}
+                  placeholder={`e.g. October 13, ${formYear}`}
                   value={formDate}
                   onChange={(e) => setFormDate(e.target.value)}
                   className="w-full text-sm px-3 py-2 rounded-xl border border-gray-200 focus:outline-hidden focus:ring-2 focus:ring-rose-400"
@@ -640,7 +640,7 @@ export const YearlyGallery: React.FC = () => {
               <div className="text-xs text-gray-400 mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
                 <span>{activePhoto.date}</span>
                 <span className="font-handwriting text-rose-500 text-base font-bold">
-                  Koena &hearts; cupcakeee memory
+                  Ayush &hearts; cupcakeee memory
                 </span>
               </div>
             </div>

@@ -1,41 +1,27 @@
 import { AgeBreakdown, AstrologicalData } from '../types';
 
-// Exact birth date: 7 October 2006, 11:30 PM (23:30)
-export const BIRTH_DATE = new Date(2006, 9, 7, 23, 30, 0);
+// Exact birth date: 13 October 2005
+// Moolank 4 (1+3=4 from date 13), ruled by Rahu in numerology
+// Zodiac: Taurus (Vedic/Western), Earth sign, Fixed modality, ruled by Venus
+export const BIRTH_DATE = new Date(2005, 9, 13, 0, 0, 0); // October 13, 2005
+export const BIRTH_YEAR = 2005;
 
 export function calculateAgeBreakdown(targetNow: Date = new Date()): AgeBreakdown {
   const diffMs = targetNow.getTime() - BIRTH_DATE.getTime();
 
-  // If before birth date (safety)
   if (diffMs < 0) {
     return {
-      years: 0,
-      months: 0,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      totalDays: 0,
-      totalHours: 0,
-      totalHeartbeats: 0,
-      nextBirthdayDays: 0,
-      nextBirthdayHours: 0,
-      nextBirthdayMinutes: 0,
-      nextBirthdaySeconds: 0,
-      isBirthdayToday: false,
-      ageTurning: 0,
+      years: 0, months: 0, days: 0, hours: 0, minutes: 0, seconds: 0,
+      totalDays: 0, totalHours: 0, totalHeartbeats: 0,
+      nextBirthdayDays: 0, nextBirthdayHours: 0, nextBirthdayMinutes: 0, nextBirthdaySeconds: 0,
+      isBirthdayToday: false, ageTurning: 0,
     };
   }
 
-  // Calculate calendar years, months, days
   let years = targetNow.getFullYear() - BIRTH_DATE.getFullYear();
   let birthThisYear = new Date(targetNow.getFullYear(), BIRTH_DATE.getMonth(), BIRTH_DATE.getDate(), BIRTH_DATE.getHours(), BIRTH_DATE.getMinutes());
+  if (targetNow < birthThisYear) years -= 1;
 
-  if (targetNow < birthThisYear) {
-    years -= 1;
-  }
-
-  // Exact calendar difference
   let tempDate = new Date(BIRTH_DATE);
   tempDate.setFullYear(tempDate.getFullYear() + years);
 
@@ -43,12 +29,7 @@ export function calculateAgeBreakdown(targetNow: Date = new Date()): AgeBreakdow
   while (true) {
     const nextMonth = new Date(tempDate);
     nextMonth.setMonth(nextMonth.getMonth() + 1);
-    if (nextMonth <= targetNow) {
-      tempDate = nextMonth;
-      months++;
-    } else {
-      break;
-    }
+    if (nextMonth <= targetNow) { tempDate = nextMonth; months++; } else break;
   }
 
   const remainderMs = targetNow.getTime() - tempDate.getTime();
@@ -57,17 +38,14 @@ export function calculateAgeBreakdown(targetNow: Date = new Date()): AgeBreakdow
   const minutes = Math.floor((remainderMs % (1000 * 60 * 60)) / (1000 * 60));
   const seconds = Math.floor((remainderMs % (1000 * 60)) / 1000);
 
-  // Totals
   const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
-  // Average resting heartbeat ~75 bpm
   const totalHeartbeats = Math.floor((diffMs / 1000 / 60) * 75);
 
-  // Next Birthday countdown
   const currentYear = targetNow.getFullYear();
-  let nextBday = new Date(currentYear, 9, 7, 23, 30, 0);
+  let nextBday = new Date(currentYear, 9, 13, 0, 0, 0);
   if (targetNow.getTime() > nextBday.getTime()) {
-    nextBday = new Date(currentYear + 1, 9, 7, 23, 30, 0);
+    nextBday = new Date(currentYear + 1, 9, 13, 0, 0, 0);
   }
 
   const nextDiffMs = Math.max(0, nextBday.getTime() - targetNow.getTime());
@@ -76,64 +54,52 @@ export function calculateAgeBreakdown(targetNow: Date = new Date()): AgeBreakdow
   const nextBirthdayMinutes = Math.floor((nextDiffMs % (1000 * 60 * 60)) / (1000 * 60));
   const nextBirthdaySeconds = Math.floor((nextDiffMs % (1000 * 60)) / 1000);
 
-  // Check if today is October 7
-  const isBirthdayToday = targetNow.getMonth() === 9 && targetNow.getDate() === 7;
+  const isBirthdayToday = targetNow.getMonth() === 9 && targetNow.getDate() === 13;
   const ageTurning = isBirthdayToday ? years : years + 1;
 
   return {
-    years,
-    months,
-    days,
-    hours,
-    minutes,
-    seconds,
-    totalDays,
-    totalHours,
-    totalHeartbeats,
-    nextBirthdayDays,
-    nextBirthdayHours,
-    nextBirthdayMinutes,
-    nextBirthdaySeconds,
-    isBirthdayToday,
-    ageTurning,
+    years, months, days, hours, minutes, seconds,
+    totalDays, totalHours, totalHeartbeats,
+    nextBirthdayDays, nextBirthdayHours, nextBirthdayMinutes, nextBirthdaySeconds,
+    isBirthdayToday, ageTurning,
   };
 }
 
 export const ASTROLOGICAL_PROFILE: AstrologicalData = {
-  sunSign: 'Libra',
-  sunSymbol: '♎',
-  birthDateString: 'October 7, 2006',
-  birthTime: '11:30 PM (23:30)',
-  rulingPlanet: 'Venus (Goddess of Beauty & Harmony)',
-  element: 'Air (Breezy, Intellectual & Radiant)',
-  modality: 'Cardinal (Initiator, Visionary Diplomat)',
-  moonSign: 'Aries (Fierce Inner Fire & Passionate Courage)',
-  decan: 'Second Decan (Ruled by Uranus / Aquarius - Creative Genius)',
-  gemstone: 'Opal & Rose Quartz',
-  flower: 'Rose & Bluebell',
-  luckyColors: ['Rose Quartz Pink', 'Warm Champagne Gold', 'Pastel Peach', 'Sky Blue'],
-  luckyNumbers: [7, 15, 24],
-  tarotCards: ['Justice (XI - Truth & Balance)', 'The Empress (III - Venusian Abundance)'],
+  sunSign: 'Taurus',
+  sunSymbol: '♉',
+  birthDateString: 'October 13, 2005',
+  birthTime: 'Moolank 4 • Rahu',
+  rulingPlanet: 'Venus (Planet of Love, Beauty & Luxury) • Rahu (Moolank 4)',
+  element: 'Earth (Grounded, Reliable, Sensual & Strong)',
+  modality: 'Fixed (Stable, Determined, Loyal & Steadfast)',
+  moonSign: 'Taurus / Aries (Passionate, Determined Protector)',
+  decan: 'Second Decan (Ruled by Mercury - Intellectual Depth & Wit)',
+  gemstone: 'Diamond & Emerald (Moolank 4: Gomed/Hessonite)',
+  flower: 'Rose & Poppy',
+  luckyColors: ['Royal Blue', 'Deep Emerald Green', 'Rose Gold', 'Midnight Black'],
+  luckyNumbers: [4, 13, 22, 31],
+  tarotCards: ['The Emperor (IV - Structure & Power)', 'The Hierophant (V - Wisdom)'],
   personalityTraits: [
     {
-      title: 'Effortless Grace & Charm',
-      description: 'Ruled by Venus, you bring natural aesthetic harmony, warmth, and gentleness to everyone in your orbit.',
-      icon: '✨',
+      title: 'Rock-Steady Loyalty (Taurus Earth)',
+      description: 'As a true Taurus bull, you are fiercely loyal, reliable, and the strongest shoulder for everyone you love. Once you care, you care forever.',
+      icon: '🐂',
     },
     {
-      title: 'Fierce Loyal Heart (Aries Moon)',
-      description: 'Behind your peaceful Libra smile lies a deeply passionate, loyal, and brave heart that protects loved ones.',
-      icon: '🔥',
+      title: 'Moolank 4 - Rahu Energy',
+      description: 'Born with root number 4 under Rahu&apos;s gaze, you possess a magnetic, unconventional mind, sharp intelligence, and the power to break rules and build your own path.',
+      icon: '🔮',
     },
     {
-      title: 'Creative Aesthetic Sense',
-      description: 'An eye for sweet visual balance, soft pastel palettes, thoughtful music, and making life look and feel like art.',
-      icon: '🎨',
+      title: 'Venusian Heart & Taste',
+      description: 'Ruled by Venus too, you have an eye for beauty, great taste in music and aesthetics, and a soft romantic heart hidden beneath that strong exterior.',
+      icon: '💖',
     },
     {
-      title: 'The Midnight Peacemaker',
-      description: 'Born at 11:30 PM under starry skies, your intuition is luminous. You heal discord and sprinkle quiet joy.',
-      icon: '🌙',
+      title: 'Determined Protector',
+      description: 'When you set your mind on something or someone, nothing can shake you. You protect your people with a quiet, unshakable strength that makes everyone feel safe around you.',
+      icon: '🛡️',
     },
   ],
 };

@@ -80,7 +80,7 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
     } catch (err) {
       console.error('Gemini wish generation error:', err);
       setMessage(
-        'Happy 20th Birthday to the sweetest Cupcake in the universe! May your Libra charm and Venusian radiance illuminate every path you take this year! 🧁✨'
+        'Happy 21st Birthday bbyyy Ayush! 🎂♉ May your Taurus strength and Moolank 4 Rahu magnetism take you to every height you dream of. So proud of my boy! 🧁✨'
       );
       setShowAiHelper(false);
     } finally {
@@ -181,10 +181,10 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
             <span>Community Birthday Guestbook</span>
           </div>
           <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-1">
-            Wishes &amp; Love Notes for Koena
+            Wishes &amp; Love Notes for Ayush ♉
           </h2>
           <p className="text-sm text-gray-500">
-            Leave your warmest birthday blessing for Koena. Every wish is permanently preserved here!
+            Leave your warmest birthday blessing for bbyyy Ayu. Every wish is permanently preserved here!
           </p>
         </div>
 
@@ -211,7 +211,7 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
         <div className="lg:col-span-5 bg-gradient-to-b from-rose-50/90 via-pink-50/50 to-white p-6 rounded-3xl border border-rose-200 shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-serif font-bold text-gray-800 text-lg flex items-center gap-2">
-              <span>Write Koena a Birthday Wish</span>
+              <span>Write Ayush a Birthday Wish 💌</span>
               <span>🧁</span>
             </h3>
           </div>
@@ -243,13 +243,14 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
                 onChange={(e) => setRelationship(e.target.value)}
                 className="w-full text-sm px-3 py-2.5 rounded-xl bg-white border border-rose-200 focus:outline-hidden focus:ring-2 focus:ring-rose-400"
               >
-                <option value="Best Friend">Best Friend</option>
+                <option value="Best Friend">Best Friend (Bro)</option>
                 <option value="Family">Family Member</option>
-                <option value="Soul Sister">Soul Sister</option>
+                <option value="Girlfriend">💖 Girlfriend</option>
                 <option value="Childhood Friend">Childhood Friend</option>
                 <option value="College / School Friend">College / School Friend</option>
                 <option value="Well-Wisher">Well-Wisher</option>
                 <option value="Secret Admirer">Secret Admirer</option>
+                <option value="Brother / Cousin">Brother / Cousin</option>
               </select>
             </div>
 
@@ -306,7 +307,7 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
               </div>
             </div>
 
-            {/* Message Area with Gemini AI helper toggle */}
+            {/* Message Area with Wish Helper toggle */}
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-xs font-semibold text-gray-700">
@@ -318,19 +319,18 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
                   className="inline-flex items-center gap-1 text-[11px] text-purple-700 font-semibold hover:text-purple-900 bg-purple-100/80 px-2 py-0.5 rounded-md border border-purple-200"
                 >
                   <Wand2 className="w-3 h-3 text-purple-600" />
-                  <span>Gemini Wish Assistant</span>
+                  <span>Magic Wish Helper ✨</span>
                 </button>
               </div>
 
-              {/* Gemini helper expandable drawer */}
+              {/* Wish helper expandable drawer */}
               {showAiHelper && (
                 <div className="mb-2 p-3 rounded-xl bg-purple-50/90 border border-purple-200 text-xs space-y-2 animate-fade-in">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-purple-900 flex items-center gap-1">
                       <Sparkles className="w-3 h-3 text-amber-500" />
-                      Gemini 3.8 Flash
+                      Craft a sweet wish for Ayu
                     </span>
-                    <span className="text-[10px] text-purple-600">Google AI Studio</span>
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
@@ -342,7 +342,7 @@ export const WishWall: React.FC<WishWallProps> = ({ onOpenShare }) => {
                       <option value="Sweet & Poetic">Tone: Sweet &amp; Poetic</option>
                       <option value="Warm & Heartfelt">Tone: Warm &amp; Heartfelt</option>
                       <option value="Playful & Fun">Tone: Playful &amp; Fun</option>
-                      <option value="Libra Astrological Blessing">Tone: Libra Blessing</option>
+                      <option value="Taurus Astrological Blessing">Tone: Taurus ♉ Blessing</option>
                     </select>
 
                     <button

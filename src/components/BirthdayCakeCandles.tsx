@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import confetti from '../utils/confetti';
 import { birthdayAudio } from '../utils/audio';
-import { Volume2, VolumeX, Sparkles, Wind, Flame, Music, RotateCcw } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles, Wind, Music, RotateCcw } from 'lucide-react';
 
 const DISCO_THEMES = [
   { name: 'Neon', colors: ['#f472b6', '#22d3ee', '#c084fc', '#fde047'] },
@@ -27,11 +27,10 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
   const [hasMadeWish, setHasMadeWish] = useState(false);
   const [isPlayingSong, setIsPlayingSong] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [candleCount] = useState(20); // 20 years for 2006 -> 2026
+  const [candleCount] = useState(21);
   const [discoTheme, setDiscoTheme] = useState<number | null>(null);
 
   useEffect(() => {
-    // If today is birthday or celebration mode is turned on, trigger confetti burst once
     if (isBirthdayToday || celebrationMode) {
       triggerSparkles();
     }
@@ -39,7 +38,6 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
 
   useEffect(() => {
     if (discoTheme === null) return;
-
     const timeout = window.setTimeout(() => setDiscoTheme(null), 2800);
     return () => window.clearTimeout(timeout);
   }, [discoTheme]);
@@ -53,7 +51,7 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
         colors: ['#f472b6', '#fb7185', '#fbbf24', '#c084fc', '#fde047'],
       });
     } catch {
-      // ignore in test environments
+      // ignore
     }
   };
 
@@ -86,7 +84,6 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
     setHasMadeWish(true);
 
     try {
-      // Big celebratory fireworks confetti
       const end = Date.now() + 2.5 * 1000;
       const colors = ['#f472b6', '#fbcfe8', '#f59e0b', '#fbbf24', '#e879f9'];
 
@@ -115,7 +112,6 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
       // ignore
     }
 
-    // Auto-play the birthday song if not already playing
     if (!isPlayingSong) {
       handleToggleSong();
     }
@@ -149,33 +145,33 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
   };
 
   return (
-    <section className={`relative overflow-hidden rounded-3xl bg-gradient-to-b from-rose-50/90 via-pink-50/50 to-amber-50/70 p-6 md:p-10 border border-rose-200/80 shadow-xl shadow-rose-100/50 backdrop-blur-sm${discoTheme === null ? '' : ` disco-lights disco-theme-${discoTheme}`}`}>
+    <section className={`relative overflow-hidden rounded-3xl bg-gradient-to-b from-rose-50/90 via-pink-50/50 to-amber-50/70 p-4 sm:p-6 md:p-10 border border-rose-200/80 shadow-xl shadow-rose-100/50 backdrop-blur-sm${discoTheme === null ? '' : ` disco-lights disco-theme-${discoTheme}`}`}>
       {/* Decorative background stars & sparkle blobs */}
-      <div className="absolute top-4 right-6 text-2xl opacity-40 animate-pulse">✨</div>
-      <div className="absolute bottom-6 left-6 text-3xl opacity-30 animate-bounce">🧁</div>
+      <div className="absolute top-4 right-6 text-2xl opacity-40 animate-pulse pointer-events-none">✨</div>
+      <div className="absolute bottom-6 left-6 text-3xl opacity-30 animate-bounce pointer-events-none">🧁</div>
       <div className="absolute top-1/2 -left-12 w-48 h-48 bg-rose-200/30 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute top-1/3 -right-12 w-48 h-48 bg-amber-200/30 rounded-full blur-3xl pointer-events-none" />
 
       {/* Header bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div>
+      <div className="flex flex-col sm:flex-row sm:flex-wrap items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8 relative z-10">
+        <div className="w-full sm:w-auto">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-rose-100/80 border border-rose-200 text-rose-700 text-xs font-semibold tracking-wide uppercase">
             <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-spin" />
-            <span>October 7th Annual Tradition</span>
+            <span>October 13th Annual Tradition</span>
           </div>
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-2">
-            Koena&apos;s Birthday Cupcake &amp; Candles
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold text-gray-800 mt-2">
+            Ayu&apos;s Birthday Cupcake &amp; Candles
           </h2>
           <p className="text-sm md:text-base text-gray-600">
-            Lit every year on October 7th for Koena. Make a wish and blow out the flames!
+            Lit every year on October 13th for bbyyy Ayush ♉. Make a wish and blow out the flames!
           </p>
         </div>
 
         {/* Music & Mode controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
           <button
             onClick={handleToggleSong}
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all shadow-sm ${
               isPlayingSong
                 ? 'bg-rose-500 text-white shadow-rose-200 ring-2 ring-rose-400 ring-offset-2'
                 : 'bg-white text-rose-700 hover:bg-rose-50 border border-rose-200'
@@ -183,7 +179,7 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
             title="Play Music Box Birthday Tune"
           >
             <Music className={`w-4 h-4 ${isPlayingSong ? 'animate-bounce' : ''}`} />
-            <span>{isPlayingSong ? 'Playing Tune 🎶' : 'Birthday Music'}</span>
+            <span className="text-xs sm:text-sm">{isPlayingSong ? 'Playing Tune 🎶' : 'Birthday Music'}</span>
           </button>
 
           <button
@@ -208,25 +204,25 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
       </div>
 
       {/* Interactive Cupcake and Candles Display */}
-      <div className="flex flex-col items-center justify-center my-6">
+      <div className="flex flex-col items-center justify-center my-4 sm:my-6 relative z-10">
         {/* Floating Wish Banner if blown */}
         {hasMadeWish && (
-          <div className="animate-fade-in mb-6 px-6 py-2.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white text-sm md:text-base font-medium shadow-lg shadow-pink-200 flex items-center gap-2">
-            <span>✨ Your wish has flown to the stars! Happy {ageTurning}th Birthday Koena! ✨</span>
+          <div className="animate-fade-in mb-4 sm:mb-6 px-4 sm:px-6 py-2.5 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white text-xs sm:text-sm md:text-base font-medium shadow-lg shadow-pink-200 flex items-center gap-2 max-w-[95vw] text-center">
+            <span className="truncate">✨ Your wish has flown to the stars! Happy {ageTurning}th Birthday bbyyy! ✨</span>
           </div>
         )}
 
         {/* Cupcake & Candles Container */}
-        <div className="relative flex flex-col items-center pt-8 pb-4">
+        <div className="relative flex flex-col items-center pt-6 sm:pt-8 pb-4 w-full max-w-md">
           {/* Row of glowing candles on top */}
-          <div className="flex items-end justify-center gap-1.5 md:gap-2 mb-1 px-4 z-10">
+          <div className="flex items-end justify-center gap-1 sm:gap-1.5 md:gap-2 mb-1 px-2 sm:px-4 z-10 flex-wrap">
             {Array.from({ length: Math.min(candleCount, 12) }).map((_, idx) => (
               <div key={idx} className="flex flex-col items-center">
                 {/* Flame or smoke */}
-                <div className="h-7 flex items-center justify-center">
+                <div className="h-6 sm:h-7 flex items-center justify-center">
                   {candlesLit ? (
                     <div
-                      className="relative w-3.5 h-6 rounded-full bg-gradient-to-t from-amber-500 via-yellow-300 to-white shadow-[0_0_12px_rgba(251,191,36,0.9)] animate-pulse"
+                      className="relative w-3 sm:w-3.5 h-5 sm:h-6 rounded-full bg-gradient-to-t from-amber-500 via-yellow-300 to-white shadow-[0_0_12px_rgba(251,191,36,0.9)] animate-pulse"
                       style={{
                         animationDuration: `${0.6 + (idx % 4) * 0.2}s`,
                         transformOrigin: 'bottom center',
@@ -244,9 +240,9 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
 
                 {/* Candle Body */}
                 <div
-                  className="w-2 md:w-2.5 rounded-t-sm shadow-sm"
+                  className="w-1.5 sm:w-2 md:w-2.5 rounded-t-sm shadow-sm"
                   style={{
-                    height: `${28 + (idx % 3) * 6}px`,
+                    height: `${24 + (idx % 3) * 5}px`,
                     background:
                       idx % 3 === 0
                         ? 'linear-gradient(to bottom, #f472b6, #ec4899)'
@@ -261,89 +257,88 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
 
           {/* Central Milestone Candle Badge */}
           <div className="relative -mt-2 z-20 flex items-center justify-center">
-            <div className="px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-rose-400 text-white font-serif font-black text-xs md:text-sm tracking-wider shadow-md border-2 border-white flex items-center gap-1.5">
+            <div className="px-3 sm:px-4 py-1 rounded-full bg-gradient-to-r from-amber-400 to-rose-400 text-white font-serif font-black text-xs sm:text-sm tracking-wider shadow-md border-2 border-white flex items-center gap-1.5 whitespace-nowrap">
               <span>{candlesLit ? '🔥' : '✨'}</span>
-              <span>SWEET {ageTurning} FOR KOENA</span>
+              <span>SWEET {ageTurning} FOR AYUSH</span>
             </div>
           </div>
 
           {/* The Cupcake Structure */}
-          <div className="relative flex flex-col items-center -mt-3">
+          <div className="relative flex flex-col items-center -mt-3 w-full">
             {/* Swirled Frosting Top Tier */}
-            <div className="relative z-10 w-48 md:w-64 h-20 md:h-24 bg-gradient-to-b from-rose-100 via-pink-200 to-pink-300 rounded-t-full shadow-inner border-t-2 border-white/60 flex items-center justify-center overflow-hidden">
-              {/* Frosting Swirl lines */}
+            <div className="relative z-10 w-44 sm:w-56 md:w-64 h-16 sm:h-20 md:h-24 bg-gradient-to-b from-rose-100 via-pink-200 to-pink-300 rounded-t-full shadow-inner border-t-2 border-white/60 flex items-center justify-center overflow-hidden cupcake-frosting">
               <div className="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.8),transparent_70%)]" />
 
               {/* Colorful sprinkles on frosting */}
-              <div className="absolute top-3 left-8 w-2 h-1 bg-amber-400 rounded-full rotate-45" />
-              <div className="absolute top-6 left-16 w-2.5 h-1 bg-rose-500 rounded-full -rotate-12" />
-              <div className="absolute top-4 right-10 w-2 h-1 bg-purple-400 rounded-full rotate-24" />
-              <div className="absolute top-8 right-20 w-2.5 h-1 bg-emerald-400 rounded-full -rotate-45" />
-              <div className="absolute top-10 left-24 w-2 h-1 bg-yellow-300 rounded-full rotate-12" />
-              <div className="absolute top-5 left-36 w-2 h-1 bg-pink-500 rounded-full rotate-90" />
+              <div className="absolute top-2 sm:top-3 left-6 sm:left-8 w-2 h-1 bg-amber-400 rounded-full rotate-45" />
+              <div className="absolute top-4 sm:top-6 left-12 sm:left-16 w-2.5 h-1 bg-rose-500 rounded-full -rotate-12" />
+              <div className="absolute top-3 sm:top-4 right-8 sm:right-10 w-2 h-1 bg-purple-400 rounded-full rotate-24" />
+              <div className="absolute top-6 sm:top-8 right-16 sm:right-20 w-2.5 h-1 bg-emerald-400 rounded-full -rotate-45" />
+              <div className="absolute top-8 sm:top-10 left-20 sm:left-24 w-2 h-1 bg-yellow-300 rounded-full rotate-12" />
+              <div className="absolute top-4 sm:top-5 left-28 sm:left-36 w-2 h-1 bg-pink-500 rounded-full rotate-90" />
 
-              {/* Cherry on top if blown */}
-              <div className="relative -top-2 flex flex-col items-center">
-                <span className="text-2xl drop-shadow-sm">🍓</span>
+              {/* Cherry on top */}
+              <div className="relative -top-1 sm:-top-2 flex flex-col items-center">
+                <span className="text-xl sm:text-2xl drop-shadow-sm">🍓</span>
               </div>
             </div>
 
             {/* Frosting Scalloped Ruffles */}
-            <div className="relative z-10 flex -mt-2 w-52 md:w-68 justify-around px-2">
+            <div className="relative z-10 flex -mt-1.5 sm:-mt-2 w-48 sm:w-60 md:w-[17rem] justify-around px-2">
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
                   key={i}
-                  className="w-7 md:w-9 h-6 md:h-8 rounded-full bg-gradient-to-b from-pink-300 to-rose-300 -mx-1 shadow-sm border-b-2 border-pink-400/30"
+                  className="w-6 sm:w-7 md:w-9 h-5 sm:h-6 md:h-8 rounded-full bg-gradient-to-b from-pink-300 to-rose-300 -mx-0.5 sm:-mx-1 shadow-sm border-b-2 border-pink-400/30"
                 />
               ))}
             </div>
 
             {/* Cupcake Liner / Base */}
             <div
-              className="relative w-40 md:w-52 h-24 md:h-30 rounded-b-2xl shadow-lg flex flex-col items-center justify-center overflow-hidden border-b-4 border-amber-900/20"
+              className="relative w-36 sm:w-44 md:w-52 h-20 sm:h-24 md:h-28 rounded-b-2xl shadow-lg flex flex-col items-center justify-center overflow-hidden border-b-4 border-amber-900/20 cupcake-liner"
               style={{
                 background: 'linear-gradient(180deg, #d97706 0%, #b45309 60%, #92400e 100%)',
                 clipPath: 'polygon(5% 0%, 95% 0%, 82% 100%, 18% 100%)',
               }}
             >
               {/* Fluted ridges of cupcake paper */}
-              <div className="absolute inset-0 flex justify-between px-3 opacity-30">
+              <div className="absolute inset-0 flex justify-between px-2 sm:px-3 opacity-30">
                 {Array.from({ length: 9 }).map((_, i) => (
-                  <div key={i} className="w-1 h-full bg-amber-950" />
+                  <div key={i} className="w-0.5 sm:w-1 h-full bg-amber-950" />
                 ))}
               </div>
 
               {/* Brand stamp on cupcake liner */}
-              <span className="relative z-10 font-handwriting text-xl md:text-2xl text-amber-100 font-bold tracking-wider drop-shadow-sm rotate-[-4deg]">
+              <span className="relative z-10 font-handwriting text-lg sm:text-xl md:text-2xl text-amber-100 font-bold tracking-wider drop-shadow-sm rotate-[-4deg]">
                 cupcakeee
               </span>
-              <span className="relative z-10 text-[10px] md:text-xs text-amber-200/90 font-medium">
-                Est. 7 Oct 2006
+              <span className="relative z-10 text-[9px] sm:text-[10px] md:text-xs text-amber-200/90 font-medium">
+                Est. 13 Oct 2005 ♉
               </span>
             </div>
 
             {/* Cake Stand / Plate */}
-            <div className="relative -mt-2 w-56 md:w-72 h-4 bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-full shadow-md border-t border-white" />
-            <div className="w-24 md:w-32 h-3 bg-gradient-to-b from-gray-300 to-gray-400 rounded-b-lg shadow-sm" />
+            <div className="relative -mt-1 sm:-mt-2 w-52 sm:w-64 md:w-72 h-3 sm:h-4 bg-gradient-to-r from-gray-200 via-white to-gray-200 rounded-full shadow-md border-t border-white cupcake-stand" />
+            <div className="w-20 sm:w-24 md:w-32 h-2.5 sm:h-3 bg-gradient-to-b from-gray-300 to-gray-400 rounded-b-lg shadow-sm" />
           </div>
         </div>
 
         {/* Action Buttons: Blow Candles or Relight */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-4 sm:mt-6 px-2">
           {candlesLit ? (
             <button
               onClick={handleBlowCandles}
-              className="group flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm md:text-base shadow-lg shadow-rose-200 hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+              className="group flex items-center gap-1.5 sm:gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-amber-500 text-white font-semibold text-sm sm:text-base shadow-lg shadow-rose-200 hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
             >
-              <Wind className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <Wind className="w-4 sm:w-5 h-4 sm:h-5 group-hover:translate-x-1 transition-transform shrink-0" />
               <span>Blow Out the Candles 💨</span>
             </button>
           ) : (
             <button
               onClick={handleRelight}
-              className="flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-semibold text-sm md:text-base shadow-lg shadow-amber-200 hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
+              className="flex items-center gap-1.5 sm:gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-semibold text-sm sm:text-base shadow-lg shadow-amber-200 hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
             >
-              <RotateCcw className="w-4 h-4 animate-spin-reverse" />
+              <RotateCcw className="w-4 h-4 animate-spin-reverse shrink-0" />
               <span>Relight the Candles 🕯️</span>
             </button>
           )}
@@ -351,18 +346,18 @@ export const BirthdayCakeCandles: React.FC<BirthdayCakeCandlesProps> = ({
           <button
             onClick={handleThrowConfetti}
             aria-label={`Throw confetti with ${DISCO_THEMES[((discoTheme ?? -1) + 1) % DISCO_THEMES.length].name} disco lights`}
-            className={`flex items-center gap-1.5 px-4 py-3 rounded-full bg-white text-rose-700 font-medium text-sm border border-rose-200 hover:bg-rose-50 shadow-sm active:scale-95 transition-all${discoTheme === null ? '' : ' ring-2 ring-fuchsia-300 ring-offset-2'}`}
+            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2.5 sm:py-3 rounded-full bg-white text-rose-700 font-medium text-sm border border-rose-200 hover:bg-rose-50 shadow-sm active:scale-95 transition-all${discoTheme === null ? '' : ' ring-2 ring-fuchsia-300 ring-offset-2'}`}
           >
-            <Sparkles className={`w-4 h-4 text-amber-500${discoTheme === null ? '' : ' animate-spin'}`} />
-            <span>{discoTheme === null ? 'Throw Confetti 🎉' : `${DISCO_THEMES[discoTheme].name} Disco! 🎉`}</span>
+            <Sparkles className={`w-4 h-4 text-amber-500${discoTheme === null ? '' : ' animate-spin'} shrink-0`} />
+            <span className="text-xs sm:text-sm">{discoTheme === null ? 'Throw Confetti 🎉' : `${DISCO_THEMES[discoTheme].name} Disco! 🎉`}</span>
           </button>
         </div>
 
-        {/* October 7th Message */}
-        <p className="text-xs text-gray-500 mt-4 text-center max-w-md">
+        {/* October 13th Message */}
+        <p className="text-[11px] sm:text-xs text-gray-500 mt-4 text-center max-w-md px-4">
           {isBirthdayToday
-            ? "🌟 Today is October 7th! The candles are burning especially bright in your honor!"
-            : "Born 7 October 2006 at 11:30 PM. Every year on October 7th, this cake lights up in sweet celebration."}
+            ? "🌟 Today is October 13th! The candles are burning especially bright in your honor, bbyyy! Happy Birthday Ayu! 🎂♉"
+            : "Born 13 October 2005 - my Taurus bull ♉ Moolank 4 🔮. Every year on October 13th, this cake lights up in sweet celebration for my Ayu."}
         </p>
       </div>
     </section>

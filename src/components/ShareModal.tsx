@@ -28,7 +28,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose }) => {
   };
 
   const publicUrl = getPublicUrl();
-  const shareText = `🎂 Join me in wishing Koena a Happy 20th Birthday on cupcakeee! Blow virtual candles, view her photo memories, and leave her a sweet wish:`;
+  const shareText = `🎂 Join me in wishing Ayush (bbyyy) a Happy 21st Birthday on cupcakeee! ♉ Blow virtual candles, view his photo memories, and leave him a sweet wish:`;
 
   const handleCopyLink = async () => {
     try {
@@ -53,7 +53,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'cupcakeee - Happy Birthday Koena! 🧁',
+          title: 'cupcakeee - Happy Birthday Ayush! 🧁♉',
           text: shareText,
           url: publicUrl,
         });
@@ -70,7 +70,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose }) => {
   )}`;
 
   const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-    `Celebrating Koena's 20th Birthday on cupcakeee! 🧁✨`
+    `Celebrating Ayush's 21st Birthday (Taurus ♉ Moolank 4) on cupcakeee! 🧁✨`
   )}&url=${encodeURIComponent(publicUrl)}`;
 
   return (
@@ -98,7 +98,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div>
             <h3 className="text-xl font-serif font-bold text-gray-800">
-              Share Koena&apos;s Website
+              Share Ayu&apos;s Birthday Website
             </h3>
             <p className="text-xs text-rose-600 font-semibold">
               Public link that opens on everyone&apos;s phone!
@@ -194,7 +194,7 @@ export const ShareModal: React.FC<ShareModalProps> = ({ isOpen, onClose }) => {
         )}
 
         <p className="text-[11px] text-gray-400 text-center mt-4">
-          Anyone with this link can view Koena&apos;s exact age, blow her birthday candles, listen to the music, and post wishes!
+          Anyone with this link can view Ayu&apos;s exact age, blow his birthday candles, listen to the music, and post wishes for bbyyy!
         </p>
       </div>
     </div>
