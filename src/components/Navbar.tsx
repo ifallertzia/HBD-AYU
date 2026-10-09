@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Volume2, VolumeX, Sparkles, Share2, Menu, X } from 'lucide-react';
 import { birthdayAudio } from '../utils/audio';
+import { PhotoModeButton } from './PhotoModeButton';
 
 interface NavbarProps {
   onScrollTo: (sectionId: string) => void;
   celebrationMode: boolean;
   onToggleCelebration: () => void;
   onOpenShare?: () => void;
+  photoMode?: boolean;
+  onTogglePhotoMode?: () => void;
+  photoCount?: number;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -14,6 +18,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   celebrationMode,
   onToggleCelebration,
   onOpenShare,
+  photoMode = false,
+  onTogglePhotoMode,
+  photoCount = 0,
 }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -73,6 +80,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Actions */}
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {onTogglePhotoMode && photoCount > 0 && (
+            <PhotoModeButton variant="nav" active={photoMode} onToggle={onTogglePhotoMode} />
+          )}
+
           {onOpenShare && (
             <button
               onClick={onOpenShare}
@@ -128,6 +139,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {item.label}
               </button>
             ))}
+            {onTogglePhotoMode && photoCount > 0 && (
+              <PhotoModeButton
+                variant="inline"
+                active={photoMode}
+                className="w-full justify-center mt-1"
+                onToggle={() => {
+                  onTogglePhotoMode();
+                  setMobileMenuOpen(false);
+                }}
+              />
+            )}
+
             <button
               onClick={() => {
                 onToggleCelebration();

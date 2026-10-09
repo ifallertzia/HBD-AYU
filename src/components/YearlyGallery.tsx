@@ -36,7 +36,12 @@ const uploadPhoto = async (file: File) => {
   return data.imageUrl as string;
 };
 
-export const YearlyGallery: React.FC = () => {
+interface YearlyGalleryProps {
+  onStartPhotoMode?: () => void;
+  photoCount?: number;
+}
+
+export const YearlyGallery: React.FC<YearlyGalleryProps> = ({ onStartPhotoMode, photoCount = 0 }) => {
   const [memories, setMemories] = useState<MemoryPhoto[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState<number | 'ALL'>('ALL');
@@ -281,6 +286,17 @@ export const YearlyGallery: React.FC = () => {
             <Plus className="w-4 h-4" />
             <span>Add Memory</span>
           </button>
+
+          {onStartPhotoMode && photoCount > 0 && (
+            <button
+              onClick={onStartPhotoMode}
+              className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-gray-900 text-white font-bold text-xs shadow-md shadow-gray-300 hover:bg-gray-800 hover:scale-105 active:scale-95 transition-all"
+              title="Clear the page and just watch the pictures roll"
+            >
+              <Camera className="w-4 h-4 text-rose-300" />
+              <span>Photo Mode ({photoCount})</span>
+            </button>
+          )}
         </div>
       </div>
 
