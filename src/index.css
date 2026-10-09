@@ -115,6 +115,12 @@ html, body {
   -webkit-text-size-adjust: 100%;
 }
 
+/* The page colour sits on <body> — that way the fixed .photo-wall layer (z-index 0)
+   is guaranteed to paint above it, and the site content above the wall. */
+body {
+  background-color: #fff9f6;
+}
+
 /* Hide scrollbar on year filter chips */
 .scrollbar-none {
   -ms-overflow-style: none;
@@ -170,5 +176,208 @@ html {
   }
   .cupcake-stand {
     width: 13rem !important;
+  }
+}
+
+/* =========================================================================
+   Photo wall — all 42 Ayush photos drifting behind the site, dimmed.
+   Rows are flex-grow sized (so tiles scale with viewport height), each track
+   is the photo list duplicated twice and translated -50% for a seamless loop.
+   ========================================================================= */
+
+.photo-wall {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  /* isolate the drifting layer so its repaints never drag the whole page along */
+  contain: paint;
+  backface-visibility: hidden;
+  opacity: 0;
+  transition: opacity 1400ms ease, filter 600ms ease;
+  /* keep the wall gentle so content stays readable */
+  filter: saturate(0.78) contrast(0.96);
+}
+
+.photo-wall.is-ready {
+  opacity: 1;
+}
+
+/* Paused while Photo Mode owns the screen, so the wall never restarts on the way back. */
+.photo-wall.is-paused .photo-wall-track {
+  animation-play-state: paused;
+}
+
+.photo-wall-inner {
+  position: absolute;
+  inset: -4% -3%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4vh;
+  transform: rotate(-2.2deg) scale(1.04);
+}
+
+.photo-wall-row {
+  flex: var(--row-grow, 1) 1 0;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  opacity: var(--row-opacity, 0.5);
+  transform: translateY(var(--row-shift, 0));
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 6%, #000 94%, transparent 100%);
+}
+
+.photo-wall-track {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: max-content;
+  will-change: transform;
+  animation-name: photoWallScroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.photo-wall-track.is-reverse {
+  animation-name: photoWallScrollReverse;
+}
+
+.photo-wall-tile {
+  height: 76%;
+  aspect-ratio: 3 / 4;
+  /* 14 tiles * (7.6vw + margin) always over-covers the viewport, so the loop never shows a gap */
+  min-width: 7.6vw;
+  margin-right: 1.15vw;
+  border-radius: 0.9rem;
+  overflow: hidden;
+  transform: translateY(var(--tile-shift, 0));
+  filter: blur(var(--row-blur, 0px));
+  box-shadow: 0 10px 26px -12px rgba(120, 60, 80, 0.45);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.photo-wall-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.photo-wall-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    /* melt into the page colour at the top and bottom of the viewport */
+    linear-gradient(to bottom, #fff9f6 0%, rgba(255, 249, 246, 0.22) 10%, rgba(255, 249, 246, 0.22) 90%, #fff9f6 100%),
+    /* calm the text column down, let the pictures breathe in the side gutters */
+    linear-gradient(to right, rgba(255, 249, 246, 0) 0%, rgba(255, 249, 246, 0.6) 20%, rgba(255, 249, 246, 0.74) 50%, rgba(255, 249, 246, 0.6) 80%, rgba(255, 249, 246, 0) 100%);
+}
+
+/* The whole site shell sinks away when Photo Mode takes over. */
+.site-shell {
+  transition: opacity 520ms cubic-bezier(0.4, 0, 0.2, 1), transform 520ms cubic-bezier(0.4, 0, 0.2, 1),
+    filter 520ms ease, visibility 520ms;
+}
+
+.site-shell.is-hidden {
+  opacity: 0;
+  transform: scale(0.97) translateY(-1.2vh);
+  filter: blur(10px);
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes photoWallScroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes photoWallScrollReverse {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/* On phones: one fewer row, less rotation, more faded — never fights the text. */
+@media (max-width: 767px) {
+  .photo-wall-row:nth-child(2) {
+    display: none;
+  }
+  .photo-wall-inner {
+    transform: rotate(-1.4deg) scale(1.02);
+    gap: 2.4vh;
+  }
+  .photo-wall {
+    filter: saturate(0.72) contrast(0.95) opacity(0.85);
+  }
+  .photo-wall-tile {
+    height: 84%;
+    border-radius: 0.7rem;
+  }
+}
+
+/* Photo Mode takeover in/out (CSS so it can't stall on a missing animation event). */
+@keyframes photoModeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes photoModeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+}
+
+.photo-mode-root {
+  animation: photoModeIn 460ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.photo-mode-root.is-closing {
+  animation: photoModeOut 340ms ease-in both;
+  pointer-events: none;
+}
+
+/* Floating Photo Mode pill gets out of the way of small screens. */
+@media (max-width: 640px) {
+  .photo-mode-fab {
+    bottom: calc(0.9rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .photo-wall-track {
+    animation: none !important;
+  }
+  .photo-wall-inner {
+    transform: none;
+  }
+  .site-shell {
+    transition-duration: 1ms;
+  }
+  .site-shell.is-hidden {
+    transform: none;
+    filter: none;
   }
 }

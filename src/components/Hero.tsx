@@ -6,6 +6,8 @@ interface HeroProps {
   ageTurning: number;
   isBirthdayToday: boolean;
   onOpenShare?: () => void;
+  onTogglePhotoMode?: () => void;
+  photoCount?: number;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -13,6 +15,8 @@ export const Hero: React.FC<HeroProps> = ({
   ageTurning,
   isBirthdayToday,
   onOpenShare,
+  onTogglePhotoMode,
+  photoCount = 0,
 }) => {
   return (
     <div id="hero" className="relative pt-4 sm:pt-6 pb-10 sm:pb-12 text-center overflow-hidden">
@@ -48,6 +52,20 @@ export const Hero: React.FC<HeroProps> = ({
           <Cake className="w-4 sm:w-5 h-4 sm:h-5 shrink-0" />
           <span>Blow Ayu&apos;s Candles 🎂</span>
         </button>
+
+        {onTogglePhotoMode && photoCount > 0 && (
+          <button
+            onClick={onTogglePhotoMode}
+            className="flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full bg-gray-900 text-white font-bold text-sm md:text-base shadow-lg shadow-gray-400/40 hover:bg-gray-800 hover:scale-105 active:scale-95 transition-all"
+            title="All the pictures, no text — slides by itself"
+          >
+            <span className="text-base sm:text-lg">📸</span>
+            <span>Photo Mode</span>
+            <span className="rounded-full bg-white/15 px-2 py-0.5 text-[10px] font-bold tracking-wider">
+              {photoCount}
+            </span>
+          </button>
+        )}
 
         <button
           onClick={() => onScrollTo('wishes')}
